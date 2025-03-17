@@ -18,12 +18,16 @@
 
         <nav>
             <a href="index.html" class="nav-btn">Accueil</a>
-            <a href="presentation.html" class="nav-btn">Samples</a>
+            <a href="samples.html" class="nav-btn">samples</a>
         </nav>
 
         <!-- Introduction -->
         <section class="introduction">
-            <p>Bienvenue sur Bills Production 🎶 Bonne écoute ! 🔥🎧</p>
+            <p>Bienvenue sur Bills Production 🎶
+
+                Plonge dans mon univers musical où chaque son est une expérience unique. Ici, tu trouveras mes productions, mes inspirations et mes derniers morceaux à écouter ou télécharger. Que tu sois artiste, passionné de musique ou simplement curieux, explore mon travail et laisse-toi emporter par le son de Bils Production.
+                
+                Bonne écoute ! 🔥🎧</p>
             <p>Billy - Producteur | Rémi - Développeur</p>
         </section>
 
@@ -36,35 +40,19 @@
     <section class="publications">
         <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
 
-        <div class="publication" data-title="bills type beat hld2 v2.wav">
-            <h2>Bills Type Beat</h2>
+        <div class="publication" data-title="mon premier son prod.mp3">
+            <h2>Bills Type Beat </h2>
             <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
-
-            <!-- Player audio -->
-            <div class="audio-player">
-                <div class="waveform" id="waveform1"></div>
-                <div class="controls">
-                    <button class="play" data-wave="waveform1" data-src="hld2 v2.wav">▶️ Play</button>
-                    <input type="range" class="volume-slider" data-wave="waveform1" min="0" max="1" step="0.01" value="1">
-                </div>
-            </div>
-
-            <a href="hld2 v2.wav" download>Télécharger</a>
+            <div class="waveform" id="waveform1"></div>
+            <button class="play" data-wave="waveform1" data-src="prod.mp3">▶️ Play</button>
+            <a href="prod.mp3" download>Télécharger</a>
         </div>
 
-        <div class="publication" data-title="raw tape vol1 hld2 v2.wav">
+        <div class="publication" data-title="sound expérimental hld2 v2.wav">
             <h2>Raw Tape Vol.1</h2>
             <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
-
-            <!-- Player audio -->
-            <div class="audio-player">
-                <div class="waveform" id="waveform2"></div>
-                <div class="controls">
-                    <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
-                    <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
-                </div>
-            </div>
-
+            <div class="waveform" id="waveform2"></div>
+            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
             <a href="hld2 v2.wav" download>Télécharger</a>
         </div>
     </section>
@@ -72,59 +60,34 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let waves = {};
-            let isPlaying = {};
 
-            // Création des lecteurs audio
-            const players = [
-                { id: 'waveform1', src: 'hld2 v2.wav' },
+            const files = [
+                { id: 'waveform1', src: 'prod.mp3' },
                 { id: 'waveform2', src: 'hld2 v2.wav' }
             ];
 
-            players.forEach(player => {
-                waves[player.id] = WaveSurfer.create({
-                    container: "#" + player.id,
+            files.forEach(file => {
+                waves[file.id] = WaveSurfer.create({
+                    container: "#" + file.id,
                     waveColor: "#00aaff",
                     progressColor: "white",
                     barWidth: 2,
                     height: 80,
                     normalize: true
                 });
+                waves[file.id].load(file.src);
+            });
 
-                isPlaying[player.id] = false;
-
-                // Gestion du bouton Play/Pause
-                document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("click", function () {
-                    const waveId = this.getAttribute("data-wave");
-
-                    if (!isPlaying[waveId]) {
-                        waves[waveId].load(this.getAttribute("data-src"));
-                        isPlaying[waveId] = true;
-                    }
-
+            document.querySelectorAll(".play").forEach(button => {
+                button.addEventListener("click", function () {
+                    const waveId = button.getAttribute("data-wave");
                     if (!waves[waveId].isPlaying()) {
                         waves[waveId].play();
-                        this.textContent = "⏸️ Pause";
+                        button.textContent = "⏸️ Pause";
                     } else {
                         waves[waveId].pause();
-                        this.textContent = "▶️ Play";
+                        button.textContent = "▶️ Play";
                     }
-                });
-
-                // Gestion du volume
-                document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("input", function () {
-                    const waveId = this.getAttribute("data-wave");
-                    waves[waveId].setVolume(this.value);
-                });
-
-                // Gestion du toucher pour mobile
-                document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
-                    event.preventDefault();
-                    this.click();
-                });
-
-                document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
-                    event.preventDefault();
-                    this.dispatchEvent(new Event("input"));
                 });
             });
         });
@@ -136,10 +99,8 @@
             let found = false;
 
             posts.forEach(post => {
-                let title = post.getAttribute('data-title').toLowerCase();
-                let heading = post.querySelector('h2').textContent.toLowerCase();
-
-                if (title.includes(input) || heading.includes(input)) {
+                let title = post.getAttribute('data-title');
+                if (title.includes(input)) {
                     post.style.display = 'block';
                     found = true;
                 } else {
