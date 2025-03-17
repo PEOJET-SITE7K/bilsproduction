@@ -7,36 +7,38 @@ body {
     text-align: center;
 }
 
-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-}
-
 .header-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
+    flex-direction: column; /* Aligne le titre et le logo en colonne */
+    text-align: center;
+}
+
+.title-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espace entre le logo et "Bils" */
 }
 
 h1 {
-    font-size: 5em; /* Titre toujours grand */
+    font-size: 5em;
     color: white;
-    margin-left: 18px; /* Réduction de l'espace entre le logo et le titre (-2px) */
+    margin: 0;
 }
 
-.logo-container {
-    margin-right: 18px; /* Rapprochement du logo */
+h1 span {
+    display: block; /* Force "Production" à être en dessous */
+    font-size: 0.5em; /* Taille réduite pour "Production" */
 }
 
 .logo {
-    width: 175px; /* Augmenté de 1,5x (90px * 1.5) */
-    height: 175px;
+    width: 135px; /* Taille ajustée */
+    height: 135px;
     border-radius: 50%;
     animation: rotateLogo 3s infinite alternate;
 }
+
 
 
 @keyframes rotateLogo {
