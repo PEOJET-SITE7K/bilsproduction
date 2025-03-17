@@ -32,8 +32,8 @@ h1 {
 }
 
 .logo {
-    width: 135px; /* Augmenté de 1,5x (90px * 1.5) */
-    height: 135px;
+    width: 175px; /* Augmenté de 1,5x (90px * 1.5) */
+    height: 175px;
     border-radius: 50%;
     animation: rotateLogo 3s infinite alternate;
 }
