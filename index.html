@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bils Production</title>
+    <title>Bills Production</title>
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,39 +12,45 @@
         <div class="header-container">
             <h1>
                 <img src="B.png" alt="Logo" class="logo">
-                <span>ils Production</span>
+                <span>ills Production</span>
             </h1>
         </div>
 
         <nav>
             <a href="index.html" class="nav-btn">Accueil</a>
-            <a href="presentation.html" class="nav-btn">Instruments</a>
-            <a href="contact.html" class="nav-btn">Contact</a>
+            <a href="samples.html" class="nav-btn">samples</a>
         </nav>
-
-        <div class="proprietaire">
-            <p>- Propriétaire : Billy Squire</p>
-            <p>- Créateur web : Rémi Siringo</p>
-        </div>
 
         <!-- Introduction -->
         <section class="introduction">
-            <p>Bienvenue sur Bils Production, votre plateforme dédiée à la musique et aux productions audio ! Explorez nos créations, écoutez les sons, et découvrez des morceaux uniques. Nous sommes heureux de vous accueillir ! 🎶</p>
+            <p>Bienvenue sur Bills Production 🎶
+
+                Plonge dans mon univers musical où chaque son est une expérience unique. Ici, tu trouveras mes productions, mes inspirations et mes derniers morceaux à écouter ou télécharger. Que tu sois artiste, passionné de musique ou simplement curieux, explore mon travail et laisse-toi emporter par le son de Bils Production.
+                
+                Bonne écoute ! 🔥🎧</p>
+            <p>Billy - Producteur | Rémi - Développeur</p>
         </section>
+
+        <!-- Barre de recherche -->
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Rechercher un son..." onkeyup="searchPosts()">
+        </div>
     </header>
 
     <section class="publications">
-        <div class="publication">
-            <h2>Post 1 : Mon premier son (prod.mp3)</h2>
-            <p>Un extrait audio incroyable à écouter !</p>
+        <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
+
+        <div class="publication" data-title="mon premier son prod.mp3">
+            <h2>Bills Type Beat </h2>
+            <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
             <div class="waveform" id="waveform1"></div>
             <button class="play" data-wave="waveform1" data-src="prod.mp3">▶️ Play</button>
             <a href="prod.mp3" download>Télécharger</a>
         </div>
 
-        <div class="publication">
-            <h2>Post 2 : Sound expérimental (hld2 v2.wav)</h2>
-            <p>Une nouvelle mélodie pour tes oreilles.</p>
+        <div class="publication" data-title="sound expérimental hld2 v2.wav">
+            <h2>Raw Tape Vol.1</h2>
+            <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
             <div class="waveform" id="waveform2"></div>
             <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
             <a href="hld2 v2.wav" download>Télécharger</a>
@@ -85,6 +91,25 @@
                 });
             });
         });
+
+        function searchPosts() {
+            let input = document.getElementById('searchBar').value.toLowerCase();
+            let posts = document.querySelectorAll('.publication');
+            let noResults = document.getElementById('noResults');
+            let found = false;
+
+            posts.forEach(post => {
+                let title = post.getAttribute('data-title');
+                if (title.includes(input)) {
+                    post.style.display = 'block';
+                    found = true;
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = found ? 'none' : 'block';
+        }
     </script>
 </body>
 </html>
