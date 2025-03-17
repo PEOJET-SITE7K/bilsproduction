@@ -37,44 +37,42 @@
         </div>
     </header>
     
-<!-- DEBUT DES PUBLICATION PROD  -->
 <section class="publications">
-<p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
-    
-<div class="publication" data-title="sound expérimental hld2 v2.wav">
-    <h2>Bills Type Beat</h2>
-    <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
+    <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
 
-    <!-- Player audio -->
-    <div class="audio-player">
-        <div class="waveform" id="waveform2"></div>
-        <div class="controls">
-            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
-            <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
+    <div class="publication" data-title="bills type beat hld2 v2.wav">
+        <h2>Bills Type Beat</h2>
+        <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
+
+        <!-- Player audio -->
+        <div class="audio-player">
+            <div class="waveform" id="waveform1"></div>
+            <div class="controls">
+                <button class="play" data-wave="waveform1" data-src="hld2 v2.wav">▶️ Play</button>
+                <input type="range" class="volume-slider" data-wave="waveform1" min="0" max="1" step="0.01" value="1">
+            </div>
         </div>
+
+        <a href="hld2 v2.wav" download>Télécharger</a>
     </div>
 
-    <a href="hld2 v2.wav" download>Télécharger</a>
-</div>
+    <div class="publication" data-title="raw tape vol1 hld2 v2.wav">
+        <h2>Raw Tape Vol.1</h2>
+        <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
 
-    <div class="publication" data-title="sound expérimental hld2 v2.wav">
-    <h2>Raw Tape Vol.1</h2>
-    <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
-
-    <!-- Player audio -->
-    <div class="audio-player">
-        <div class="waveform" id="waveform2"></div>
-        <div class="controls">
-            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
-            <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
+        <!-- Player audio -->
+        <div class="audio-player">
+            <div class="waveform" id="waveform2"></div>
+            <div class="controls">
+                <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
+                <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
+            </div>
         </div>
+
+        <a href="hld2 v2.wav" download>Télécharger</a>
     </div>
+</section>
 
-    <a href="hld2 v2.wav" download>Télécharger</a>
-</div>
-
-    </section>
-<!-- FIN DES PUNLICATION PROD -->
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -133,36 +131,63 @@ function searchPosts() {
 }
 document.addEventListener("DOMContentLoaded", function () {
     let waves = {};
+    let isPlaying = {};
 
-    // Création du lecteur audio
-    waves['waveform2'] = WaveSurfer.create({
-        container: "#waveform2",
-        waveColor: "#00aaff",
-        progressColor: "white",
-        barWidth: 2,
-        height: 80,
-        normalize: true
-    });
-    waves['waveform2'].load("hld2 v2.wav");
+    // Création des lecteurs audio
+    const players = [
+        { id: 'waveform1', src: 'hld2 v2.wav' },
+        { id: 'waveform2', src: 'hld2 v2.wav' }
+    ];
 
-    // Gestion du bouton Play/Pause
-    document.querySelector(".play[data-wave='waveform2']").addEventListener("click", function () {
-        const waveId = this.getAttribute("data-wave");
-        if (!waves[waveId].isPlaying()) {
-            waves[waveId].play();
-            this.textContent = "⏸️ Pause";
-        } else {
-            waves[waveId].pause();
-            this.textContent = "▶️ Play";
-        }
-    });
+    players.forEach(player => {
+        waves[player.id] = WaveSurfer.create({
+            container: "#" + player.id,
+            waveColor: "#00aaff",
+            progressColor: "white",
+            barWidth: 2,
+            height: 80,
+            normalize: true
+        });
 
-    // Gestion du volume
-    document.querySelector(".volume-slider[data-wave='waveform2']").addEventListener("input", function () {
-        const waveId = this.getAttribute("data-wave");
-        waves[waveId].setVolume(this.value);
+        isPlaying[player.id] = false; // Aucun son ne joue au début
+
+        // Gestion du bouton Play/Pause
+        document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("click", function () {
+            const waveId = this.getAttribute("data-wave");
+
+            if (!isPlaying[waveId]) {
+                waves[waveId].load(this.getAttribute("data-src"));
+                isPlaying[waveId] = true;
+            }
+
+            if (!waves[waveId].isPlaying()) {
+                waves[waveId].play();
+                this.textContent = "⏸️ Pause";
+            } else {
+                waves[waveId].pause();
+                this.textContent = "▶️ Play";
+            }
+        });
+
+        // Gestion du volume
+        document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("input", function () {
+            const waveId = this.getAttribute("data-wave");
+            waves[waveId].setVolume(this.value);
+        });
+
+        // Gestion du toucher pour mobile
+        document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
+            event.preventDefault();
+            this.click();
+        });
+
+        document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
+            event.preventDefault();
+            this.dispatchEvent(new Event("input"));
+        });
     });
 });
+
 
     </script>
 </body>
