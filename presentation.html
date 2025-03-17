@@ -40,22 +40,39 @@ Bon beatmaking ! 🎧
 
     <section class="publications">
         <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
+<div class="publication" data-title="sound expérimental hld2 v2.wav">
+    <h2>tatsuro yamashita sample loop</h2>
+    <p>Un pack de snares percutants pour booster tes prods. 🔥🥁</p>
 
-        <div class="publication" data-title="mon premier son prod.mp3">
-            <h2>tatsuro yamashita sample loop</h2>
-            <p>Un pack de snares percutants pour booster tes prods. 🔥🥁</p>
-            <div class="waveform" id="waveform1"></div>
-            <button class="play" data-wave="waveform1" data-src="sample loop tatsuro yamashita.mp3">▶️ Play</button>
-            <a href="sample loop tatsuro yamashita.mp3" download>Télécharger</a>
+    <!-- Player audio -->
+    <div class="audio-player">
+        <div class="waveform" id="waveform2"></div>
+        <div class="controls">
+            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
+            <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
         </div>
+    </div>
 
-        <div class="publication" data-title="sound expérimental hld2 v2.wav">
-            <h2>tatsuro yamashita sample loop mixé</h2>
-            <p>Des mélodies prêtes à l’emploi pour une vibe unique. 🎶🎛️</p>
-            <div class="waveform" id="waveform2"></div>
-            <button class="play" data-wave="waveform2" data-src="sample loop tatsuro yamashita mix.mp3">▶️ Play</button>
-            <a href="sample loop tatsuro yamashita mix.mp3" download>Télécharger</a>
+    <a href="hld2 v2.wav" download>Télécharger</a>
+</div>
+
+
+<div class="publication" data-title="sound expérimental hld2 v2.wav">
+    <h2>tatsuro yamashita sample loop mixé</h2>
+    <p>Des mélodies prêtes à l’emploi pour une vibe unique. 🎶🎛️</p>
+
+    <!-- Player audio -->
+    <div class="audio-player">
+        <div class="waveform" id="waveform2"></div>
+        <div class="controls">
+            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
+            <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
         </div>
+    </div>
+
+    <a href="hld2 v2.wav" download>Télécharger</a>
+</div>
+
     </section>
 
     <script>
@@ -113,6 +130,38 @@ function searchPosts() {
 
     noResults.style.display = found ? 'none' : 'block';
 }
+document.addEventListener("DOMContentLoaded", function () {
+    let waves = {};
+
+    // Création du lecteur audio
+    waves['waveform2'] = WaveSurfer.create({
+        container: "#waveform2",
+        waveColor: "#00aaff",
+        progressColor: "white",
+        barWidth: 2,
+        height: 80,
+        normalize: true
+    });
+    waves['waveform2'].load("hld2 v2.wav");
+
+    // Gestion du bouton Play/Pause
+    document.querySelector(".play[data-wave='waveform2']").addEventListener("click", function () {
+        const waveId = this.getAttribute("data-wave");
+        if (!waves[waveId].isPlaying()) {
+            waves[waveId].play();
+            this.textContent = "⏸️ Pause";
+        } else {
+            waves[waveId].pause();
+            this.textContent = "▶️ Play";
+        }
+    });
+
+    // Gestion du volume
+    document.querySelector(".volume-slider[data-wave='waveform2']").addEventListener("input", function () {
+        const waveId = this.getAttribute("data-wave");
+        waves[waveId].setVolume(this.value);
+    });
+});
 
     </script>
 </body>
