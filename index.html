@@ -92,24 +92,27 @@
             });
         });
 
-        function searchPosts() {
-            let input = document.getElementById('searchBar').value.toLowerCase();
-            let posts = document.querySelectorAll('.publication');
-            let noResults = document.getElementById('noResults');
-            let found = false;
+function searchPosts() {
+    let input = document.getElementById('searchBar').value.toLowerCase();
+    let posts = document.querySelectorAll('.publication');
+    let noResults = document.getElementById('noResults');
+    let found = false;
 
-            posts.forEach(post => {
-                let title = post.getAttribute('data-title');
-                if (title.includes(input)) {
-                    post.style.display = 'block';
-                    found = true;
-                } else {
-                    post.style.display = 'none';
-                }
-            });
+    posts.forEach(post => {
+        let title = post.getAttribute('data-title').toLowerCase();
+        let heading = post.querySelector('h2').textContent.toLowerCase();
 
-            noResults.style.display = found ? 'none' : 'block';
+        if (title.includes(input) || heading.includes(input)) {
+            post.style.display = 'block';
+            found = true;
+        } else {
+            post.style.display = 'none';
         }
+    });
+
+    noResults.style.display = found ? 'none' : 'block';
+}
+
     </script>
 </body>
 </html>
