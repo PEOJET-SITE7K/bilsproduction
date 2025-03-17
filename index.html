@@ -39,25 +39,40 @@
     
 <!-- DEBUT DES PUBLICATION PROD  -->
 <section class="publications">
+<p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
+    
+<div class="publication" data-title="sound expérimental hld2 v2.wav">
+    <h2>Bills Type Beat</h2>
+    <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
 
-        
-        <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
-
-        <div class="publication" data-title="mon premier son prod.mp3">
-            <h2>Bills Type Beat </h2>
-            <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
-            <div class="waveform" id="waveform1"></div>
-            <button class="play" data-wave="waveform1" data-src="prod.mp3">▶️ Play</button>
-            <a href="prod.mp3" download>Télécharger</a>
-        </div>
-
-        <div class="publication" data-title="sound expérimental hld2 v2.wav">
-            <h2>Raw Tape Vol.1</h2>
-            <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
-            <div class="waveform" id="waveform2"></div>
+    <!-- Player audio -->
+    <div class="audio-player">
+        <div class="waveform" id="waveform2"></div>
+        <div class="controls">
             <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
-            <a href="hld2 v2.wav" download>Télécharger</a>
+            <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
         </div>
+    </div>
+
+    <a href="hld2 v2.wav" download>Télécharger</a>
+</div>
+
+    <div class="publication" data-title="sound expérimental hld2 v2.wav">
+    <h2>Raw Tape Vol.1</h2>
+    <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
+
+    <!-- Player audio -->
+    <div class="audio-player">
+        <div class="waveform" id="waveform2"></div>
+        <div class="controls">
+            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
+            <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
+        </div>
+    </div>
+
+    <a href="hld2 v2.wav" download>Télécharger</a>
+</div>
+
     </section>
 <!-- FIN DES PUNLICATION PROD -->
 
@@ -116,6 +131,38 @@ function searchPosts() {
 
     noResults.style.display = found ? 'none' : 'block';
 }
+document.addEventListener("DOMContentLoaded", function () {
+    let waves = {};
+
+    // Création du lecteur audio
+    waves['waveform2'] = WaveSurfer.create({
+        container: "#waveform2",
+        waveColor: "#00aaff",
+        progressColor: "white",
+        barWidth: 2,
+        height: 80,
+        normalize: true
+    });
+    waves['waveform2'].load("hld2 v2.wav");
+
+    // Gestion du bouton Play/Pause
+    document.querySelector(".play[data-wave='waveform2']").addEventListener("click", function () {
+        const waveId = this.getAttribute("data-wave");
+        if (!waves[waveId].isPlaying()) {
+            waves[waveId].play();
+            this.textContent = "⏸️ Pause";
+        } else {
+            waves[waveId].pause();
+            this.textContent = "▶️ Play";
+        }
+    });
+
+    // Gestion du volume
+    document.querySelector(".volume-slider[data-wave='waveform2']").addEventListener("input", function () {
+        const waveId = this.getAttribute("data-wave");
+        waves[waveId].setVolume(this.value);
+    });
+});
 
     </script>
 </body>
