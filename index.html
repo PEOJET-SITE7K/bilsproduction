@@ -18,16 +18,12 @@
 
         <nav>
             <a href="index.html" class="nav-btn">Accueil</a>
-            <a href="presentation.html" class="nav-btn">samples</a>
+            <a href="presentation.html" class="nav-btn">Samples</a>
         </nav>
 
         <!-- Introduction -->
         <section class="introduction">
-            <p>Bienvenue sur Bills Production 🎶
-
-                
-                
-                Bonne écoute ! 🔥🎧</p>
+            <p>Bienvenue sur Bills Production 🎶 Bonne écoute ! 🔥🎧</p>
             <p>Billy - Producteur | Rémi - Développeur</p>
         </section>
 
@@ -36,159 +32,124 @@
             <input type="text" id="searchBar" placeholder="Rechercher un son..." onkeyup="searchPosts()">
         </div>
     </header>
-    
-<section class="publications">
-    <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
 
-    <div class="publication" data-title="bills type beat hld2 v2.wav">
-        <h2>Bills Type Beat</h2>
-        <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
+    <section class="publications">
+        <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
 
-        <!-- Player audio -->
-        <div class="audio-player">
-            <div class="waveform" id="waveform1"></div>
-            <div class="controls">
-                <button class="play" data-wave="waveform1" data-src="hld2 v2.wav">▶️ Play</button>
-                <input type="range" class="volume-slider" data-wave="waveform1" min="0" max="1" step="0.01" value="1">
+        <div class="publication" data-title="bills type beat hld2 v2.wav">
+            <h2>Bills Type Beat</h2>
+            <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
+
+            <!-- Player audio -->
+            <div class="audio-player">
+                <div class="waveform" id="waveform1"></div>
+                <div class="controls">
+                    <button class="play" data-wave="waveform1" data-src="hld2 v2.wav">▶️ Play</button>
+                    <input type="range" class="volume-slider" data-wave="waveform1" min="0" max="1" step="0.01" value="1">
+                </div>
             </div>
+
+            <a href="hld2 v2.wav" download>Télécharger</a>
         </div>
 
-        <a href="hld2 v2.wav" download>Télécharger</a>
-    </div>
+        <div class="publication" data-title="raw tape vol1 hld2 v2.wav">
+            <h2>Raw Tape Vol.1</h2>
+            <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
 
-    <div class="publication" data-title="raw tape vol1 hld2 v2.wav">
-        <h2>Raw Tape Vol.1</h2>
-        <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
-
-        <!-- Player audio -->
-        <div class="audio-player">
-            <div class="waveform" id="waveform2"></div>
-            <div class="controls">
-                <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
-                <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
+            <!-- Player audio -->
+            <div class="audio-player">
+                <div class="waveform" id="waveform2"></div>
+                <div class="controls">
+                    <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
+                    <input type="range" class="volume-slider" data-wave="waveform2" min="0" max="1" step="0.01" value="1">
+                </div>
             </div>
+
+            <a href="hld2 v2.wav" download>Télécharger</a>
         </div>
-
-        <a href="hld2 v2.wav" download>Télécharger</a>
-    </div>
-</section>
-
+    </section>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let waves = {};
+            let isPlaying = {};
 
-            const files = [
-                { id: 'waveform1', src: 'prod.mp3' },
+            // Création des lecteurs audio
+            const players = [
+                { id: 'waveform1', src: 'hld2 v2.wav' },
                 { id: 'waveform2', src: 'hld2 v2.wav' }
             ];
 
-            files.forEach(file => {
-                waves[file.id] = WaveSurfer.create({
-                    container: "#" + file.id,
+            players.forEach(player => {
+                waves[player.id] = WaveSurfer.create({
+                    container: "#" + player.id,
                     waveColor: "#00aaff",
                     progressColor: "white",
                     barWidth: 2,
                     height: 80,
                     normalize: true
                 });
-                waves[file.id].load(file.src);
-            });
 
-            document.querySelectorAll(".play").forEach(button => {
-                button.addEventListener("click", function () {
-                    const waveId = button.getAttribute("data-wave");
+                isPlaying[player.id] = false;
+
+                // Gestion du bouton Play/Pause
+                document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("click", function () {
+                    const waveId = this.getAttribute("data-wave");
+
+                    if (!isPlaying[waveId]) {
+                        waves[waveId].load(this.getAttribute("data-src"));
+                        isPlaying[waveId] = true;
+                    }
+
                     if (!waves[waveId].isPlaying()) {
                         waves[waveId].play();
-                        button.textContent = "⏸️ Pause";
+                        this.textContent = "⏸️ Pause";
                     } else {
                         waves[waveId].pause();
-                        button.textContent = "▶️ Play";
+                        this.textContent = "▶️ Play";
                     }
+                });
+
+                // Gestion du volume
+                document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("input", function () {
+                    const waveId = this.getAttribute("data-wave");
+                    waves[waveId].setVolume(this.value);
+                });
+
+                // Gestion du toucher pour mobile
+                document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
+                    event.preventDefault();
+                    this.click();
+                });
+
+                document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
+                    event.preventDefault();
+                    this.dispatchEvent(new Event("input"));
                 });
             });
         });
 
-function searchPosts() {
-    let input = document.getElementById('searchBar').value.toLowerCase();
-    let posts = document.querySelectorAll('.publication');
-    let noResults = document.getElementById('noResults');
-    let found = false;
+        function searchPosts() {
+            let input = document.getElementById('searchBar').value.toLowerCase();
+            let posts = document.querySelectorAll('.publication');
+            let noResults = document.getElementById('noResults');
+            let found = false;
 
-    posts.forEach(post => {
-        let title = post.getAttribute('data-title').toLowerCase();
-        let heading = post.querySelector('h2').textContent.toLowerCase();
+            posts.forEach(post => {
+                let title = post.getAttribute('data-title').toLowerCase();
+                let heading = post.querySelector('h2').textContent.toLowerCase();
 
-        if (title.includes(input) || heading.includes(input)) {
-            post.style.display = 'block';
-            found = true;
-        } else {
-            post.style.display = 'none';
+                if (title.includes(input) || heading.includes(input)) {
+                    post.style.display = 'block';
+                    found = true;
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = found ? 'none' : 'block';
         }
-    });
-
-    noResults.style.display = found ? 'none' : 'block';
-}
-document.addEventListener("DOMContentLoaded", function () {
-    let waves = {};
-    let isPlaying = {};
-
-    // Création des lecteurs audio
-    const players = [
-        { id: 'waveform1', src: 'hld2 v2.wav' },
-        { id: 'waveform2', src: 'hld2 v2.wav' }
-    ];
-
-    players.forEach(player => {
-        waves[player.id] = WaveSurfer.create({
-            container: "#" + player.id,
-            waveColor: "#00aaff",
-            progressColor: "white",
-            barWidth: 2,
-            height: 80,
-            normalize: true
-        });
-
-        isPlaying[player.id] = false; // Aucun son ne joue au début
-
-        // Gestion du bouton Play/Pause
-        document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("click", function () {
-            const waveId = this.getAttribute("data-wave");
-
-            if (!isPlaying[waveId]) {
-                waves[waveId].load(this.getAttribute("data-src"));
-                isPlaying[waveId] = true;
-            }
-
-            if (!waves[waveId].isPlaying()) {
-                waves[waveId].play();
-                this.textContent = "⏸️ Pause";
-            } else {
-                waves[waveId].pause();
-                this.textContent = "▶️ Play";
-            }
-        });
-
-        // Gestion du volume
-        document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("input", function () {
-            const waveId = this.getAttribute("data-wave");
-            waves[waveId].setVolume(this.value);
-        });
-
-        // Gestion du toucher pour mobile
-        document.querySelector(`.play[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
-            event.preventDefault();
-            this.click();
-        });
-
-        document.querySelector(`.volume-slider[data-wave="${player.id}"]`).addEventListener("touchend", function (event) {
-            event.preventDefault();
-            this.dispatchEvent(new Event("input"));
-        });
-    });
-});
-
-
     </script>
 </body>
 </html>
+
