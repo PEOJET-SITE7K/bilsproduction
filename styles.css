@@ -70,12 +70,36 @@ nav {
     margin-top: 20px;
     padding: 10px;
     font-size: 1.2em;
-    color: #ccc;
+    color: #a8a7a7;
     background-color: #333;
     border-radius: 10px;
     width: 80%;
     max-width: 800px;
     text-align: center;
+}
+/* Barre de recherche */
+.search-container {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+}
+
+#searchBar {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #333;  /* Gris foncé */
+    color: white;  /* Texte blanc */
+    border: 1px solid #555;  /* Bordure légèrement plus claire */
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+/* Effet au focus */
+#searchBar:focus {
+    border: 1px solid #00aaff;  /* Bordure bleue au focus */
+    background-color: #444;  /* Gris légèrement plus clair */
 }
 
 .publications {
