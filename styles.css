@@ -120,4 +120,43 @@ button {
 
 button:hover {
     background-color: #0088cc;
+}
+
+a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #00aaff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5em;
+    }
+
+    .logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .introduction {
+        font-size: 1em;
+        padding: 8px;
+    }
+
+    .publication {
+        width: 95%;
+        padding: 15px;
+    }
+
+    button {
+        padding: 8px 12px;
+    }
+}
 
