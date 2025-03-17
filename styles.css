@@ -22,21 +22,22 @@ header {
 }
 
 h1 {
-    font-size: 5em; /* Titre plus grand */
+    font-size: 5em; /* Titre toujours grand */
     color: white;
-    margin-left: 20px; /* Espace entre le logo et le titre */
+    margin-left: 18px; /* Réduction de l'espace entre le logo et le titre (-2px) */
 }
 
 .logo-container {
-    margin-right: 20px;
+    margin-right: 18px; /* Rapprochement du logo */
 }
 
 .logo {
-    width: 90px; /* Taille du logo */
-    height: 90px;
-    border-radius: 50%; /* Logo arrondi */
-    animation: rotateLogo 3s infinite alternate; /* Animation de rotation */
+    width: 135px; /* Augmenté de 1,5x (90px * 1.5) */
+    height: 135px;
+    border-radius: 50%;
+    animation: rotateLogo 3s infinite alternate;
 }
+
 
 @keyframes rotateLogo {
     0% {
