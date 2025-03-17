@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #1c1c1c; /* Fond noir/gris foncé */
+    background-color: #1c1c1c;
     color: #fff;
     margin: 0;
     padding: 0;
@@ -22,30 +22,25 @@ header {
 }
 
 h1 {
-    font-size: 5em; /* Titre toujours grand */
+    font-size: 5em;
     color: white;
-    margin-left: 18px; /* Réduction de l'espace entre le logo et le titre (-2px) */
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
 }
 
-.logo-container {
-    margin-right: 18px; /* Rapprochement du logo */
-}
-
+/* Logo animé */
 .logo {
-    width: 175px; /* Augmenté de 1,5x (90px * 1.5) */
+    width: 175px;
     height: 175px;
     border-radius: 50%;
     animation: rotateLogo 3s infinite alternate;
 }
 
-
+/* Animation de rotation */
 @keyframes rotateLogo {
-    0% {
-        transform: rotate(-20deg); /* Rotation de -20° au début */
-    }
-    100% {
-        transform: rotate(20deg); /* Rotation de 20° à la fin */
-    }
+    0% { transform: rotate(-20deg); }
+    100% { transform: rotate(20deg); }
 }
 
 nav {
@@ -54,7 +49,7 @@ nav {
 
 .nav-btn {
     display: inline-block;
-    background-color: #65707c; /* Bleu vif */
+    background-color: #65707c;
     color: white;
     padding: 12px 20px;
     margin: 5px;
@@ -66,10 +61,9 @@ nav {
 }
 
 .nav-btn:hover {
-    background-color: #fdfdfd; /* Bleu plus foncé */
+    background-color: #fdfdfd;
 }
 
-/* Introduction */
 .introduction {
     margin-top: 20px;
     padding: 10px;
@@ -82,7 +76,6 @@ nav {
     text-align: center;
 }
 
-/* SECTION DES PUBLICATIONS */
 .publications {
     display: flex;
     flex-direction: column;
@@ -91,11 +84,11 @@ nav {
 }
 
 .publication {
-    background-color: #1a2025; /* Bleu marine */
+    background-color: #1a2025;
     padding: 20px;
     margin: 15px 0;
-    border-radius: 15px; /* Plus arrondi */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Ombre douce */
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 600px;
     text-align: center;
@@ -103,28 +96,16 @@ nav {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Décalage des publications */
-.publication:nth-child(odd) {
-    transform: translateX(-5%);
-}
-
-.publication:nth-child(even) {
-    transform: translateX(5%);
-}
-
-/* Effet hover sur les publications */
 .publication:hover {
-    transform: translateY(-10px); /* Décale légèrement vers le haut */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Ombre plus marquée */
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* STYLE DU WAVEFORM */
 .waveform {
     width: 100%;
     margin: 10px 0;
 }
 
-/* BOUTONS PLAY/PAUSE */
 button {
     background-color: #00aaff;
     color: white;
@@ -139,91 +120,4 @@ button {
 
 button:hover {
     background-color: #0088cc;
-}
-.button-container {
-    display: flex;
-    flex-wrap: wrap; /* Permet aux boutons de s'adapter si l'écran est trop petit */
-    justify-content: center; /* Centre les boutons */
-    gap: 10px; /* Espace entre les boutons */
-}
 
-.button-container button {
-    flex: 1; /* Les boutons prennent la même largeur */
-    min-width: 120px; /* Taille minimale pour éviter qu'ils soient trop petits */
-}
-
-/* 📱 Mode mobile : forcer l'affichage en ligne */
-@media screen and (max-width: 768px) {
-    .button-container {
-        flex-wrap: nowrap; /* Empêche les boutons de passer à la ligne */
-        overflow-x: auto; /* Ajoute un défilement horizontal si nécessaire */
-    }
-}
-
-
-/* LIEN DE TÉLÉCHARGEMENT */
-a {
-    display: inline-block;
-    margin-top: 10px;
-    color: #00aaff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-/* Responsive: Ajustement pour les petits écrans (mobiles) */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    header {
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 2.5em; /* Réduit la taille du titre sur mobile */
-    }
-
-    .logo {
-        width: 60px; /* Réduit la taille du logo sur mobile */
-        height: 60px;
-    }
-
-    .introduction {
-        font-size: 1em; /* Réduit la taille du texte d'introduction */
-        padding: 8px;
-    }
-
-    .nav-btn {
-        font-size: 16px; /* Réduit la taille des boutons de navigation */
-        padding: 10px 15px;
-    }
-
-    .publication {
-        width: 95%; /* Réduit la largeur des publications pour les petits écrans */
-        padding: 15px;
-    }
-
-    button {
-        padding: 8px 12px; /* Réduit la taille des boutons Play/Pause */
-    }
-}
-.proprietaire-container {
-    font-family: Arial, sans-serif;
-    background-color: #2c3e50;
-    color: white;
-    text-align: center;
-    padding: 30px;
-    border-radius: 10px;
-    margin: 50px auto;
-    width: 50%;
-}
-
-.proprietaire-container p {
-    font-size: 18px;
-    margin: 10px 0;
-}
