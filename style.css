@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #1c1c1c; /* Fond noir/gris foncé */
+    background-color: #1c1c1c;
     color: #fff;
     margin: 0;
     padding: 0;
@@ -21,30 +21,28 @@ header {
     margin-bottom: 20px;
 }
 
+/* Style du titre avec le logo */
 h1 {
-    font-size: 4em; /* Titre plus grand */
+    font-size: 5em;
     color: white;
-    margin-left: 20px; /* Espace entre le logo et le titre */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espace entre le logo et le texte */
+    margin: 0;
 }
 
-.logo-container {
-    margin-right: 20px;
-}
-
+/* Logo animé remplaçant le "B" */
 .logo {
-    width: 80px; /* Taille du logo */
-    height: 80px;
-    border-radius: 50%; /* Logo arrondi */
-    animation: rotateLogo 3s infinite alternate; /* Animation de rotation */
+    width: 90px; /* Ajusté pour s'aligner avec le texte */
+    height: 90px;
+    border-radius: 50%;
+    animation: rotateLogo 3s infinite alternate;
 }
 
+/* Animation de rotation */
 @keyframes rotateLogo {
-    0% {
-        transform: rotate(-20deg); /* Rotation de -20° au début */
-    }
-    100% {
-        transform: rotate(20deg); /* Rotation de 20° à la fin */
-    }
+    0% { transform: rotate(-20deg); }
+    100% { transform: rotate(20deg); }
 }
 
 nav {
@@ -53,7 +51,7 @@ nav {
 
 .nav-btn {
     display: inline-block;
-    background-color: #7b8da0; /* Bleu vif */
+    background-color: #65707c;
     color: white;
     padding: 12px 20px;
     margin: 5px;
@@ -65,76 +63,74 @@ nav {
 }
 
 .nav-btn:hover {
-    background-color: #c4cdd6; /* Bleu plus foncé */
+    background-color: #fdfdfd;
 }
 
-/* Introduction */
 .introduction {
     margin-top: 20px;
     padding: 10px;
     font-size: 1.2em;
-    color: #ccc;
+    color: #a8a7a7;
     background-color: #333;
     border-radius: 10px;
     width: 80%;
     max-width: 800px;
     text-align: center;
 }
+/* Barre de recherche */
+.search-container {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+}
 
-/* SECTION DES INSTRUMENTS */
-.instruments {
+#searchBar {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #333;  /* Gris foncé */
+    color: white;  /* Texte blanc */
+    border: 1px solid #555;  /* Bordure légèrement plus claire */
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+/* Effet au focus */
+#searchBar:focus {
+    border: 1px solid #00aaff;  /* Bordure bleue au focus */
+    background-color: #444;  /* Gris légèrement plus clair */
+}
+
+.publications {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
 }
 
-h2 {
-    font-size: 2.5em;
-    color: white;
-    margin-bottom: 20px;
-}
-
-/* Section pour chaque instrument */
-.instrument {
-    background-color: #373e44; /* Bleu marine */
+.publication {
+    background-color: #1a2025;
     padding: 20px;
     margin: 15px 0;
-    border-radius: 15px; /* Plus arrondi */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Ombre douce */
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 600px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Image des instruments */
-.instrument-img {
-    width: 100%;
-    max-width: 400px;
-    margin: 15px 0;
-    border-radius: 10px;
+.publication:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* STYLE DU WAVEFORM */
 .waveform {
     width: 100%;
     margin: 10px 0;
 }
 
-/* LIEN DE TÉLÉCHARGEMENT */
-a {
-    display: inline-block;
-    margin-top: 10px;
-    color: #00aaff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-/* BOUTONS PLAY/PAUSE */
 button {
     background-color: #00aaff;
     color: white;
@@ -151,37 +147,28 @@ button:hover {
     background-color: #0088cc;
 }
 
-/* Responsive: Ajustement pour les petits écrans (mobiles) */
+/* Responsive */
 @media (max-width: 768px) {
-    header {
-        padding: 10px;
-    }
-
     h1 {
-        font-size: 2.5em; /* Réduit la taille du titre sur mobile */
+        font-size: 2.5em;
     }
 
     .logo {
-        width: 60px; /* Réduit la taille du logo sur mobile */
+        width: 60px;
         height: 60px;
     }
 
     .introduction {
-        font-size: 1em; /* Réduit la taille du texte d'introduction */
+        font-size: 1em;
         padding: 8px;
     }
 
-    .nav-btn {
-        font-size: 16px; /* Réduit la taille des boutons de navigation */
-        padding: 10px 15px;
-    }
-
-    .instrument {
-        width: 95%; /* Réduit la largeur des publications pour les petits écrans */
+    .publication {
+        width: 95%;
         padding: 15px;
     }
 
-    .instrument-img {
-        max-width: 100%;
+    button {
+        padding: 8px 12px;
     }
 }
