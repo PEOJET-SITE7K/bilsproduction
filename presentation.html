@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instruments - Bills Production</title>
+    <script src="https://unpkg.com/wavesurfer.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-container">
+                <img src="B.png" alt="Logo" class="logo">
+            </div>
+            <h1>Bills Production</h1>
+        </div>
+        <nav>
+            <a href="index.html" class="nav-btn">Accueil</a>
+            <a href="presentation.html" class="nav-btn"></a>
+            <a href="contact.html" class="nav-btn">Contact</a>
+        </nav>
+        <!-- Introduction section below the navigation buttons -->
+        <section class="introduction">
+            <p>Bienvenue dans notre section Instruments ! Découvrez les outils et logiciels que nous utilisons pour créer nos productions musicales. Aujourd'hui, nous mettons en avant **FL Studio**.</p>
+        </section>
+    </header>
+
+    <section class="instruments">
+        <h2>Logiciels et Instruments utilisés</h2>
+
+        <!-- Section FL Studio -->
+        <div class="instrument">
+            <h3>FL Studio</h3>
+            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.sooftcdn.com%2Fscreen%2Fen%2Fwindows%2Ffl-studio-3.png&f=1&nofb=1&ipt=ff0cf9f76c74b77ecbaa2cc80eeccc265945ca98986b075c2550856d913c8a71&ipo=images" alt="FL Studio" class="instrument-img">
+            <p>FL Studio est un logiciel de production musicale très populaire utilisé pour la création de beats, de mélodies et pour l'arrangement de morceaux. Il est utilisé par de nombreux producteurs professionnels et amateurs.</p>
+        </div>
+
+        <!-- D'autres instruments peuvent être ajoutés ici -->
+        <div class="instrument">
+            <h3>Autre instrument</h3>
+            <p>Ajoutez d'autres instruments et logiciels que vous utilisez pour vos productions.</p>
+        </div>
+
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let waves = {};
+
+            // Exemple de fichiers audio (peuvent être ajustés en fonction de ce que tu veux afficher)
+            const files = [
+                { id: 'waveform1', src: 'prod.mp3' },
+                { id: 'waveform2', src: 'hld2 v2.wav' },
+            ];
+
+            // Chargement des ondes sonores pour chaque fichier
+            files.forEach(file => {
+                waves[file.id] = WaveSurfer.create({
+                    container: "#" + file.id,
+                    waveColor: "#00aaff",
+                    progressColor: "white",
+                    barWidth: 2,
+                    height: 80,
+                    normalize: true
+                });
+                waves[file.id].load(file.src);
+            });
+        });
+    </script>
+</body>
+</html>

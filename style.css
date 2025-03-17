@@ -1,0 +1,187 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1c1c1c; /* Fond noir/gris foncé */
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 4em; /* Titre plus grand */
+    color: white;
+    margin-left: 20px; /* Espace entre le logo et le titre */
+}
+
+.logo-container {
+    margin-right: 20px;
+}
+
+.logo {
+    width: 80px; /* Taille du logo */
+    height: 80px;
+    border-radius: 50%; /* Logo arrondi */
+    animation: rotateLogo 3s infinite alternate; /* Animation de rotation */
+}
+
+@keyframes rotateLogo {
+    0% {
+        transform: rotate(-20deg); /* Rotation de -20° au début */
+    }
+    100% {
+        transform: rotate(20deg); /* Rotation de 20° à la fin */
+    }
+}
+
+nav {
+    margin-top: 20px;
+}
+
+.nav-btn {
+    display: inline-block;
+    background-color: #7b8da0; /* Bleu vif */
+    color: white;
+    padding: 12px 20px;
+    margin: 5px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.nav-btn:hover {
+    background-color: #c4cdd6; /* Bleu plus foncé */
+}
+
+/* Introduction */
+.introduction {
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 1.2em;
+    color: #ccc;
+    background-color: #333;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+}
+
+/* SECTION DES INSTRUMENTS */
+.instruments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 2.5em;
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* Section pour chaque instrument */
+.instrument {
+    background-color: #373e44; /* Bleu marine */
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 15px; /* Plus arrondi */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Ombre douce */
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+/* Image des instruments */
+.instrument-img {
+    width: 100%;
+    max-width: 400px;
+    margin: 15px 0;
+    border-radius: 10px;
+}
+
+/* STYLE DU WAVEFORM */
+.waveform {
+    width: 100%;
+    margin: 10px 0;
+}
+
+/* LIEN DE TÉLÉCHARGEMENT */
+a {
+    display: inline-block;
+    margin-top: 10px;
+    color: #00aaff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* BOUTONS PLAY/PAUSE */
+button {
+    background-color: #00aaff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0088cc;
+}
+
+/* Responsive: Ajustement pour les petits écrans (mobiles) */
+@media (max-width: 768px) {
+    header {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 2.5em; /* Réduit la taille du titre sur mobile */
+    }
+
+    .logo {
+        width: 60px; /* Réduit la taille du logo sur mobile */
+        height: 60px;
+    }
+
+    .introduction {
+        font-size: 1em; /* Réduit la taille du texte d'introduction */
+        padding: 8px;
+    }
+
+    .nav-btn {
+        font-size: 16px; /* Réduit la taille des boutons de navigation */
+        padding: 10px 15px;
+    }
+
+    .instrument {
+        width: 95%; /* Réduit la largeur des publications pour les petits écrans */
+        padding: 15px;
+    }
+
+    .instrument-img {
+        max-width: 100%;
+    }
+}
