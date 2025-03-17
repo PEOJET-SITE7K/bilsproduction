@@ -3,29 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bills Production</title>
+    <title>Bils Production</title>
     <script src="https://unpkg.com/wavesurfer.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-<div class="header-container">
-    <div class="title-container">
-        <img src="B.png" alt="Logo" class="logo">
-        <h1>Bils <span>Production</span></h1>
-    </div>
-</div>
+        <div class="header-container">
+            <div class="title-container">
+                <img src="B.png" alt="Logo" class="logo">
+                <h1><span>ils</span> Production</h1>
+            </div>
+        </div>
 
         <nav>
             <a href="index.html" class="nav-btn">Accueil</a>
             <a href="presentation.html" class="nav-btn">Instruments</a>
             <a href="contact.html" class="nav-btn">Contact</a>
         </nav>
-    <div class="proprietaire">
-        <p>- Propriétaire : Billy Squire</p>
-        <p>- Créateur web : Rémi Siringo</p>
-    </div>
-        <!-- Introduction section below the navigation buttons -->
+
+        <div class="proprietaire">
+            <p>- Propriétaire : Billy Squire</p>
+            <p>- Créateur web : Rémi Siringo</p>
+        </div>
+
+        <!-- Introduction -->
         <section class="introduction">
             <p>Bienvenue sur Bils Production, votre plateforme dédiée à la musique et aux productions audio ! Explorez nos créations, écoutez les sons, et découvrez des morceaux uniques. Nous sommes heureux de vous accueillir ! 🎶</p>
         </section>
@@ -47,23 +49,17 @@
             <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
             <a href="hld2 v2.wav" download>Télécharger</a>
         </div>
-
-        <!-- Plus de publications ici -->
-
     </section>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let waves = {};
 
-            // Fichiers audio
             const files = [
                 { id: 'waveform1', src: 'prod.mp3' },
-                { id: 'waveform2', src: 'hld2 v2.wav' },
-                // Ajoute plus de fichiers audio ici si nécessaire
+                { id: 'waveform2', src: 'hld2 v2.wav' }
             ];
 
-            // Chargement des ondes sonores pour chaque fichier
             files.forEach(file => {
                 waves[file.id] = WaveSurfer.create({
                     container: "#" + file.id,
@@ -76,16 +72,15 @@
                 waves[file.id].load(file.src);
             });
 
-            // Gérer le bouton Play pour chaque publication
             document.querySelectorAll(".play").forEach(button => {
                 button.addEventListener("click", function () {
                     const waveId = button.getAttribute("data-wave");
                     if (!waves[waveId].isPlaying()) {
                         waves[waveId].play();
-                        button.textContent = "⏸️ Pause"; // Change le texte en pause
+                        button.textContent = "⏸️ Pause";
                     } else {
                         waves[waveId].pause();
-                        button.textContent = "▶️ Play"; // Change le texte en play
+                        button.textContent = "▶️ Play";
                     }
                 });
             });
@@ -93,4 +88,3 @@
     </script>
 </body>
 </html>
-
