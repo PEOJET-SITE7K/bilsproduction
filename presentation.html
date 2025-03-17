@@ -3,58 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instruments - Bills Production</title>
+    <title>Bills Production</title>
     <script src="https://unpkg.com/wavesurfer.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <div class="header-container">
-            <div class="logo-container">
+            <h1>
                 <img src="B.png" alt="Logo" class="logo">
-            </div>
-            <h1>Bills Production</h1>
+                <span>ills Production</span>
+            </h1>
         </div>
+
         <nav>
             <a href="index.html" class="nav-btn">Accueil</a>
-            <a href="presentation.html" class="nav-btn"></a>
-            <a href="contact.html" class="nav-btn">Contact</a>
+            <a href="samples.html" class="nav-btn">samples</a>
         </nav>
-        <!-- Introduction section below the navigation buttons -->
+
+        <!-- Introduction -->
         <section class="introduction">
-            <p>Bienvenue dans notre section Instruments ! Découvrez les outils et logiciels que nous utilisons pour créer nos productions musicales. Aujourd'hui, nous mettons en avant **FL Studio**.</p>
+            <p>Bienvenue sur la page des samples 🎛️🎶
+
+Ici, tu trouveras tous les samples prêts à être utilisés pour tes prods. Que ce soit des mélodies, des drums ou des textures sonores, explore et inspire-toi pour créer tes propres vibes. 🚀🔥
+
+Bon beatmaking ! 🎧
+
+ </p>
         </section>
+
+        <!-- Barre de recherche -->
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Rechercher un son..." onkeyup="searchPosts()">
+        </div>
     </header>
 
-    <section class="instruments">
-        <h2>Logiciels et Instruments utilisés</h2>
+    <section class="publications">
+        <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
 
-        <!-- Section FL Studio -->
-        <div class="instrument">
-            <h3>FL Studio</h3>
-            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.sooftcdn.com%2Fscreen%2Fen%2Fwindows%2Ffl-studio-3.png&f=1&nofb=1&ipt=ff0cf9f76c74b77ecbaa2cc80eeccc265945ca98986b075c2550856d913c8a71&ipo=images" alt="FL Studio" class="instrument-img">
-            <p>FL Studio est un logiciel de production musicale très populaire utilisé pour la création de beats, de mélodies et pour l'arrangement de morceaux. Il est utilisé par de nombreux producteurs professionnels et amateurs.</p>
+        <div class="publication" data-title="mon premier son prod.mp3">
+            <h2>Bills Type Beat </h2>
+            <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
+            <div class="waveform" id="waveform1"></div>
+            <button class="play" data-wave="waveform1" data-src="prod.mp3">▶️ Play</button>
+            <a href="prod.mp3" download>Télécharger</a>
         </div>
 
-        <!-- D'autres instruments peuvent être ajoutés ici -->
-        <div class="instrument">
-            <h3>Autre instrument</h3>
-            <p>Ajoutez d'autres instruments et logiciels que vous utilisez pour vos productions.</p>
+        <div class="publication" data-title="sound expérimental hld2 v2.wav">
+            <h2>Raw Tape Vol.1</h2>
+            <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
+            <div class="waveform" id="waveform2"></div>
+            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
+            <a href="hld2 v2.wav" download>Télécharger</a>
         </div>
-
     </section>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let waves = {};
 
-            // Exemple de fichiers audio (peuvent être ajustés en fonction de ce que tu veux afficher)
             const files = [
                 { id: 'waveform1', src: 'prod.mp3' },
-                { id: 'waveform2', src: 'hld2 v2.wav' },
+                { id: 'waveform2', src: 'hld2 v2.wav' }
             ];
 
-            // Chargement des ondes sonores pour chaque fichier
             files.forEach(file => {
                 waves[file.id] = WaveSurfer.create({
                     container: "#" + file.id,
@@ -66,7 +78,40 @@
                 });
                 waves[file.id].load(file.src);
             });
+
+            document.querySelectorAll(".play").forEach(button => {
+                button.addEventListener("click", function () {
+                    const waveId = button.getAttribute("data-wave");
+                    if (!waves[waveId].isPlaying()) {
+                        waves[waveId].play();
+                        button.textContent = "⏸️ Pause";
+                    } else {
+                        waves[waveId].pause();
+                        button.textContent = "▶️ Play";
+                    }
+                });
+            });
         });
+
+        function searchPosts() {
+            let input = document.getElementById('searchBar').value.toLowerCase();
+            let posts = document.querySelectorAll('.publication');
+            let noResults = document.getElementById('noResults');
+            let found = false;
+
+            posts.forEach(post => {
+                let title = post.getAttribute('data-title');
+                if (title.includes(input)) {
+                    post.style.display = 'block';
+                    found = true;
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+
+            noResults.style.display = found ? 'none' : 'block';
+        }
     </script>
 </body>
 </html>
+
