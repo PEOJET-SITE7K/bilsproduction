@@ -58,59 +58,65 @@
     </section>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let waves = {};
+    document.addEventListener("DOMContentLoaded", function () {
+        let waves = {};
 
-            const files = [
-                { id: 'waveform1', src: 'prod.mp3' },
-                { id: 'waveform2', src: 'hld2 v2.wav' }
-            ];
+        // Fichiers audio
+        const files = [
+            { id: 'waveform1', src: 'prod.mp3' },
+            { id: 'waveform2', src: 'hld2 v2.wav' },
+        ];
 
-            files.forEach(file => {
-                waves[file.id] = WaveSurfer.create({
-                    container: "#" + file.id,
-                    waveColor: "#00aaff",
-                    progressColor: "white",
-                    barWidth: 2,
-                    height: 80,
-                    normalize: true
-                });
-                waves[file.id].load(file.src);
+        files.forEach(file => {
+            let container = document.getElementById(file.id);
+            
+            if (!container) {
+                console.error("Container non trouvé pour :", file.id);
+                return;
+            }
+
+            waves[file.id] = WaveSurfer.create({
+                container: "#" + file.id,
+                waveColor: "#00aaff",
+                progressColor: "white",
+                barWidth: 2,
+                height: 80,
+                normalize: true
             });
 
-            document.querySelectorAll(".play").forEach(button => {
-                button.addEventListener("click", function () {
-                    const waveId = button.getAttribute("data-wave");
-                    if (!waves[waveId].isPlaying()) {
-                        waves[waveId].play();
-                        button.textContent = "⏸️ Pause";
-                    } else {
-                        waves[waveId].pause();
-                        button.textContent = "▶️ Play";
-                    }
-                });
+            waves[file.id].load(file.src);
+
+            waves[file.id].on("error", function (err) {
+                console.error("Erreur lors du chargement de", file.src, ":", err);
+                container.innerHTML = `<p style="color: red;">Impossible de charger le fichier : ${file.src}</p>`;
+            });
+
+            waves[file.id].on("ready", function () {
+                console.log(file.src, "chargé avec succès !");
             });
         });
 
-        function searchPosts() {
-            let input = document.getElementById('searchBar').value.toLowerCase();
-            let posts = document.querySelectorAll('.publication');
-            let noResults = document.getElementById('noResults');
-            let found = false;
+        document.querySelectorAll(".play").forEach(button => {
+            button.addEventListener("click", function () {
+                const waveId = button.getAttribute("data-wave");
 
-            posts.forEach(post => {
-                let title = post.getAttribute('data-title');
-                if (title.includes(input)) {
-                    post.style.display = 'block';
-                    found = true;
+                if (!waves[waveId].isReady) {
+                    console.warn("L'audio n'est pas prêt :", waveId);
+                    return;
+                }
+
+                if (!waves[waveId].isPlaying()) {
+                    waves[waveId].play();
+                    button.textContent = "⏸️ Pause";
                 } else {
-                    post.style.display = 'none';
+                    waves[waveId].pause();
+                    button.textContent = "▶️ Play";
                 }
             });
+        });
+    });
+</script>
 
-            noResults.style.display = found ? 'none' : 'block';
-        }
-    </script>
 </body>
 </html>
 
