@@ -1,361 +1,511 @@
-/* Ton CSS EXACTEMENT comme donné, sans modification */
-
-* {
+/* Général */
+body,
+html {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-html,
-body {
     height: 100%;
-    background: #0a0a0a;
-    /* juste fond noir sombre, plus d'image */
-    color: #0ff;
+    background-color: #0b0b0b;
+    font-family: 'Courier New', Courier, monospace;
+    color: #0f0;
     overflow: hidden;
     user-select: none;
-    position: relative;
-    cursor: none;
-    --cursor-x: 0;
-    --cursor-y: 0;
 }
 
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(rgba(0, 255, 255, 0.05) 2px, transparent 3px);
-    background-size: 50px 50px;
-    pointer-events: none;
-    z-index: 1;
-}
-
-#background-logo {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 150px;
-    height: 150px;
-    transform: translate(-50%, -50%);
-    background: url('icons/pirate.png') no-repeat center/contain;
-    filter: drop-shadow(0 0 10px #0ff);
-    image-rendering: pixelated;
-    animation: spin 20s linear infinite;
-    z-index: 2;
-}
-
-@keyframes spin {
-    from {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-
-body::after {
-    content: '';
-    position: fixed;
-    top: var(--cursor-y);
-    left: var(--cursor-x);
-    width: 12px;
-    height: 12px;
-    border: 2px solid #0ff;
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s ease;
-    z-index: 9999;
-}
-
-.desktop {
-    padding: 40px;
-    display: flex;
-    gap: 50px;
-    z-index: 10;
-}
-
-.icon {
-    width: 100px;
+/* Titre Glitch */
+.glitch-text {
+    font-size: 3em;
+    font-weight: bold;
     text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s ease;
+    margin: 1rem 0;
+    color: #0f0;
+    position: relative;
+    animation: glitch 2s infinite;
+    user-select: text;
+}
+
+@keyframes glitch {
+    0% {
+        text-shadow: 2px 0 red, -2px 0 cyan;
+    }
+
+    20% {
+        text-shadow: -2px 0 red, 2px 0 cyan;
+    }
+
+    40% {
+        text-shadow: 2px 2px red, -2px -2px cyan;
+    }
+
+    60% {
+        text-shadow: -2px -2px red, 2px 2px cyan;
+    }
+
+    80% {
+        text-shadow: 2px 0 red, -2px 0 cyan;
+    }
+
+    100% {
+        text-shadow: -2px 0 red, 2px 0 cyan;
+    }
+}
+
+/* Bureau */
+.desktop {
+    display: flex;
+    justify-content: flex-start;
+    gap: 2rem;
+    padding: 1rem 2rem;
+    height: calc(100% - 140px);
+    /* ajusté en fonction de la nouvelle taille de la taskbar */
+    align-items: flex-start;
+    background: linear-gradient(135deg, #050505, #111);
     user-select: none;
 }
 
-.icon:hover {
-    transform: scale(1.2);
+/* Icônes */
+.icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    color: #0f0;
+    width: 120px;
+    font-size: 1.2em;
+    outline: none;
 }
 
 .icon img {
-    width: 80px;
-    height: 80px;
-    filter: drop-shadow(0 0 8px #0ff);
-    image-rendering: pixelated;
+    width: 96px;
+    height: 96px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 2px #0f0);
 }
 
 .icon span {
-    margin-top: 6px;
-    font-weight: bold;
-    color: #0ff;
-    text-shadow: 0 0 10px #0ff;
-    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+    user-select: text;
 }
 
+.icon:focus {
+    outline: 2px solid #0f0;
+    background-color: rgba(0, 255, 0, 0.15);
+    border-radius: 5px;
+}
+
+/* Fenêtres */
 .window {
     position: fixed;
-    width: 500px;
-    height: 320px;
-    background: rgba(0, 0, 0, 0.85);
-    border: 2px solid #0ff;
-    border-radius: 8px;
-    box-shadow: 0 0 15px #0ff inset;
-    color: #0ff;
-    transform: scale(0);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    display: flex;
+    width: 320px;
+    height: 250px;
+    background: #050505cc;
+    border: 1px solid #0f0;
+    box-shadow: 0 0 10px #0f0;
+    display: none;
     flex-direction: column;
-    z-index: 20;
-    font-size: 16px;
-    user-select: none;
+    user-select: text;
+    overflow: hidden;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    z-index: 1000;
 }
 
 .window.active {
-    transform: scale(1);
-    opacity: 1;
+    display: flex;
 }
 
 .window-header {
-    background: #00111a;
-    padding: 12px 16px;
+    background: #0f0;
+    color: #000;
+    padding: 0.3rem 0.5rem;
+    font-weight: bold;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #0ff;
-    font-weight: bold;
-    font-size: 18px;
     cursor: move;
+    user-select: none;
 }
 
-.window-header button {
+.window-header button.close-btn {
     background: transparent;
     border: none;
-    color: #0ff;
-    font-size: 20px;
+    font-size: 1.3rem;
     cursor: pointer;
-}
-
-.window-header button:hover {
-    color: #f00;
+    color: #000;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .window-content {
-    padding: 16px;
-    flex-grow: 1;
+    padding: 0.5rem;
+    flex: 1;
     overflow-y: auto;
+    font-size: 0.9rem;
 }
 
-audio {
+.window-content audio {
     width: 100%;
+    margin-top: 0.4rem;
     outline: none;
-    filter: drop-shadow(0 0 5px #0ff);
-    border-radius: 4px;
-    margin-top: 10px;
-    background: #00111a;
+    filter: drop-shadow(0 0 3px #0f0);
 }
 
-.taskbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40px;
-    background: rgba(0, 17, 34, 0.85);
-    border-top: 2px solid #0ff;
-    display: flex;
-    align-items: center;
-    user-select: none;
-    box-shadow: 0 -2px 10px #0ff inset;
-    z-index: 30;
-    justify-content: center;
-    gap: 60px;
-    padding: 0 20px;
-}
-
-.taskbar-left {
-    color: #0ff;
-    font-weight: bold;
-    font-size: 16px;
-    position: absolute;
-    left: 20px;
-}
-
-.taskbar-center {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.taskbar-btn {
-    background: #002233;
-    border: 1.5px solid #0ff;
-    color: #0ff;
-    font-weight: bold;
-    padding: 5px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    user-select: none;
-}
-
-.taskbar-btn:hover,
-.taskbar-btn.active {
-    background: #0ff;
-    color: #000;
-    box-shadow: 0 0 10px #0ff;
-}
-
-/* ========== AJOUTS UTILES POUR FONCTIONNALITÉS ========== */
-
-/* Change le curseur de la fenêtre header pour montrer que c'est déplaçable */
-.window-header {
-    cursor: grab;
-    user-select: none;
-}
-
-.window-header:active {
-    cursor: grabbing;
-}
-
-/* Pour focus keyboard sur icônes */
-.icon:focus-visible {
-    outline: 2px solid #0ff;
-    outline-offset: 4px;
-}
-
-/* Scrollbar personnalisée dans fenêtre */
+/* Scrollbar personnalisée */
 .window-content::-webkit-scrollbar {
     width: 8px;
+}
+
+.window-content::-webkit-scrollbar-thumb {
+    background: #0f0;
+    border-radius: 4px;
 }
 
 .window-content::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.window-content::-webkit-scrollbar-thumb {
-    background-color: #0ff;
-    border-radius: 4px;
-}
-
-/* ========== AJOUT : TEXTE GLITCH CENTRAL ========== */
-
-.glitch-text {
+/* Barre des tâches */
+.taskbar {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 5rem;
-    font-weight: 900;
-    color: #0ff;
-    font-family: 'Courier New', Courier, monospace;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    user-select: none;
-    z-index: 5;
-    animation: glitch 1.5s infinite;
-    filter: drop-shadow(0 0 8px #0ff);
-    white-space: nowrap;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    /* ancienne taille rétablie */
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 999;
+    border-top: 1px solid #0f0;
+    box-shadow: 0 -2px 10px #000;
+    font-size: 1em;
+    color: #0f0;
+    font-weight: bold;
 }
 
-/* Effets glitch par superposition de calques */
-.glitch-text::before,
-.glitch-text::after {
-    content: attr(aria-label);
+.taskbar-left {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.taskbar-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 10px;
+}
+
+.taskbar-btn {
+    background: transparent;
+    border: 1px solid #0f0;
+    color: #0f0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    user-select: none;
+}
+
+.taskbar-btn:hover,
+.taskbar-btn.active {
+    background: #0f0;
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 0 10px #0f0;
+}
+
+/* Terminal */
+#terminal-overlay {
+    position: fixed;
+    bottom: 40px;
+    /* ajusté selon hauteur taskbar */
+    left: 10px;
+    width: 400px;
+    height: 150px;
+    background: rgba(0, 30, 0, 0.8);
+    border: 1px solid #0f0;
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: #0f0;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    overflow-y: auto;
+    box-shadow: 0 0 15px #0f0;
+    user-select: text;
+    border-radius: 5px;
+    outline: none;
+    z-index: 2000;
+}
+
+#terminal-output {
+    flex: 1;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+#terminal-output .terminal-command {
+    color: #0ff;
+}
+
+#terminal-input {
+    background: transparent;
+    border: none;
+    border-top: 1px solid #0f0;
+    color: #0f0;
+    padding: 4px;
+    outline: none;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+/* Particules */
+#particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Effet scanlines */
+#scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    background: repeating-linear-gradient(0deg,
+            rgba(0, 255, 0, 0.02),
+            rgba(0, 255, 0, 0.02) 1px,
+            transparent 1px,
+            transparent 3px);
+    mix-blend-mode: screen;
+    z-index: 1;
+}
+
+/* Réseaux sociaux */
+#social-icons {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 12px;
+    z-index: 2100;
+}
+
+#social-icons a img {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 0 1px #0f0);
+    transition: transform 0.2s ease;
+}
+
+#social-icons a:hover img,
+#social-icons a:focus img {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 6px #0f0);
+    outline: none;
+}
+
+#audio-visualizer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    width: 100%;
+    height: 100px;
+    pointer-events: none;
+    background: transparent;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#media-player-window {
+    background-color: #000000;
+    color: #33ff33;
+    font-family: 'Courier New', Courier, monospace;
+    border: 2px solid #33ff33;
+    box-shadow: 0 0 15px #33ff33cc;
+    user-select: none;
+    width: 400px;
+    height: 250px;
+    position: fixed;
+    z-index: 10000;
+    display: none;
+    overflow: hidden;
+    border-radius: 0;
+}
+
+/* Barre de titre */
+#media-player-window .window-header {
+    background-color: #001100;
+    color: #33ff33;
+    padding: 6px 10px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    cursor: grab;
+    user-select: none;
+    border-bottom: 1px solid #33ff33;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-shadow: 0 0 2px #00ff00;
+}
+
+/* Bouton fermeture */
+#media-player-window .close-btn {
+    background: transparent;
+    border: none;
+    color: #33ff33;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    user-select: none;
+    padding: 0 6px;
+    transition: color 0.3s ease;
+}
+
+#media-player-window .close-btn:hover {
+    color: #00ff00;
+}
+
+/* Canvas visualiseur */
+#media-visual {
+    display: block;
+    margin: 10px auto;
+    background: #000;
+    width: 360px;
+    height: 160px;
+    border: 1px solid #33ff33;
+    position: relative;
+    box-shadow: 0 0 8px #33ff33aa;
+}
+
+/* scanlines CRT */
+#media-visual::after {
+    content: "";
     position: absolute;
+    top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0.8;
-    color: #0ff;
-    background: transparent;
-    clip-path: polygon(0 2%, 100% 2%, 100% 15%, 0 15%);
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom,
+            transparent 0px,
+            transparent 2px,
+            rgba(0, 255, 0, 0.05) 3px,
+            transparent 4px);
+    animation: scanlines 1s linear infinite;
+    z-index: 2;
 }
 
-.glitch-text::before {
-    left: 2px;
-    text-shadow: -2px 0 red;
-    animation: glitchTop 1.5s infinite;
+/* Nom du son */
+#media-track-name {
+    font-weight: normal;
+    font-size: 14px;
+    padding: 4px 10px;
+    text-align: center;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 2px #00ff00;
+    position: relative;
+    z-index: 1;
 }
 
-.glitch-text::after {
-    left: -2px;
-    text-shadow: -2px 0 blue;
-    animation: glitchBottom 1.5s infinite;
+/* Barre de progression */
+#media-progress {
+    width: 90%;
+    margin: 8px auto;
+    display: block;
+    appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: #001a00;
+    outline: none;
+    cursor: pointer;
+    border: 1px solid #33ff33;
+    box-shadow: 0 0 4px #00ff00aa;
 }
 
-/* Animation principale */
-@keyframes glitch {
+#media-progress::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 16px;
+    background: #33ff33;
+    cursor: pointer;
+    border-radius: 2px;
+    border: none;
+    margin-top: -4px;
+}
+
+#media-progress::-moz-range-thumb {
+    width: 12px;
+    height: 16px;
+    background: #33ff33;
+    cursor: pointer;
+    border-radius: 2px;
+    border: none;
+}
+
+/* Temps écoulé */
+#media-time {
+    font-size: 13px;
+    text-align: center;
+    color: #33ff33;
+    font-family: 'Courier New', Courier, monospace;
+    margin-top: 6px;
+    user-select: none;
+    text-shadow: 0 0 2px #00ff00;
+}
+
+/* Curseur clignotant */
+@keyframes blink {
+
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+    }
+
+    25%,
+    75% {
+        opacity: 0;
+    }
+}
+
+#media-track-name::after {
+    content: "_";
+    display: inline-block;
+    margin-left: 4px;
+    animation: blink 1s steps(2, start) infinite;
+}
+
+/* Animation scanlines */
+@keyframes scanlines {
     0% {
-        transform: translate(-50%, -50%) translate(0);
-    }
-
-    20% {
-        transform: translate(-50%, -50%) translate(-5px, 5px);
-    }
-
-    40% {
-        transform: translate(-50%, -50%) translate(5px, -5px);
-    }
-
-    60% {
-        transform: translate(-50%, -50%) translate(-5px, 5px);
-    }
-
-    80% {
-        transform: translate(-50%, -50%) translate(5px, -5px);
+        background-position-y: 0;
     }
 
     100% {
-        transform: translate(-50%, -50%) translate(0);
-    }
-}
-
-@keyframes glitchTop {
-    0% {
-        clip-path: polygon(0 2%, 100% 2%, 100% 15%, 0 15%);
-        transform: translate(0);
-    }
-
-    50% {
-        clip-path: polygon(0 10%, 100% 10%, 100% 25%, 0 25%);
-        transform: translate(-2px, -2px);
-    }
-
-    100% {
-        clip-path: polygon(0 2%, 100% 2%, 100% 15%, 0 15%);
-        transform: translate(0);
-    }
-}
-
-@keyframes glitchBottom {
-    0% {
-        clip-path: polygon(0 80%, 100% 80%, 100% 95%, 0 95%);
-        transform: translate(0);
-    }
-
-    50% {
-        clip-path: polygon(0 85%, 100% 85%, 100% 100%, 0 100%);
-        transform: translate(2px, 2px);
-    }
-
-    100% {
-        clip-path: polygon(0 80%, 100% 80%, 100% 95%, 0 95%);
-        transform: translate(0);
+        background-position-y: 4px;
     }
 }
