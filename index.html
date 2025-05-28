@@ -1,122 +1,125 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bills Production</title>
-    <script src="https://unpkg.com/wavesurfer.js"></script>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bills Production</title>
+  <script src="https://unpkg.com/wavesurfer.js"></script>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <header>
-        <div class="header-container">
-            <h1>
-                <img src="B.png" alt="Logo" class="logo">
-                <span>ills Production</span>
-            </h1>
-        </div>
-
-        <nav>
-            <a href="index.html" class="nav-btn">Accueil</a>
-            <a href="presentation.html" class="nav-btn">samples</a>
-        </nav>
-
-        <!-- Introduction -->
-        <section class="introduction">
-            <p>Bienvenue sur Bills Production 🎶
-
-                Plonge dans mon univers musical où chaque son est une expérience unique. Ici, tu trouveras mes productions, mes inspirations et mes derniers morceaux à écouter ou télécharger. Que tu sois artiste, passionné de musique ou simplement curieux, explore mon travail et laisse-toi emporter par le son de Bils Production.
-                
-                Bonne écoute ! 🔥🎧</p>
-            <p>Billy - Producteur | Rémi - Développeur</p>
-        </section>
-
-        <!-- Barre de recherche -->
-        <div class="search-container">
-            <input type="text" id="searchBar" placeholder="Rechercher un son..." onkeyup="searchPosts()">
-        </div>
-    </header>
-
-    <section class="publications">
-        <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
-
-        <div class="publication" data-title="mon premier son prod.mp3">
-            <h2>Bills Type Beat </h2>
-            <p>Une prod sombre et lourde avec des 808 puissantes. 🔥🎶</p>
-            <div class="waveform" id="waveform1"></div>
-            <button class="play" data-wave="waveform1" data-src="prod.mp3">▶️ Play</button>
-            <a href="prod.mp3" download>Télécharger</a>
-        </div>
-
-        <div class="publication" data-title="sound expérimental hld2 v2.wav">
-            <h2>Raw Tape Vol.1</h2>
-            <p>Un son mélodique et chill avec une vibe planante. 🌊✨</p>
-            <div class="waveform" id="waveform2"></div>
-            <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
-            <a href="hld2 v2.wav" download>Télécharger</a>
-        </div>
+  <header>
+    <div class="header-container">
+      <h1>
+        <img src="B.png" alt="Logo" class="logo" />
+        <span>ills Production</span>
+      </h1>
+      <nav>
+        <a href="index.html" class="nav-btn">Accueil</a>
+        <a href="samples.html" class="nav-btn">Samples</a>
+        <a href="remix.html" class="nav-btn">Remix</a>
+        <a href="contact.html" class="nav-btn">Contact</a>
+      </nav>
+    </div>
+    <section class="introduction">
+      <p>
+        Bienvenue sur <strong>Bills Production</strong> 🎶<br />
+        Plonge dans mon univers musical où chaque son est une expérience unique. Que tu sois artiste, passionné ou simple curieux, explore mes beats, samples et remix.
+      </p>
+      <p><strong>Billy</strong> – Producteur | <strong>Rémi</strong> – Développeur</p>
     </section>
+    <div class="search-container">
+      <input
+        type="text"
+        id="searchBar"
+        placeholder="Rechercher un son..."
+        onkeyup="searchPosts()"
+      />
+    </div>
+  </header>
 
-    <script>
+  <main>
+    <section class="publications">
+      <p id="noResults" style="display: none; color: red;">Aucun résultat trouvé.</p>
+
+      <div class="publication" data-title="Bills Type Beat">
+        <h2>Bills Type Beat</h2>
+        <p>Une prod sombre et lourde avec des 808 puissantes. 🔥</p>
+        <div class="waveform" id="waveform1"></div>
+        <button class="play" data-wave="waveform1" data-src="prod.mp3">▶️ Play</button>
+        <a href="prod.mp3" download>Télécharger</a>
+      </div>
+
+      <div class="publication" data-title="Raw Tape Vol.1">
+        <h2>Raw Tape Vol.1</h2>
+        <p>Un son mélodique et chill avec une vibe planante. 🌊</p>
+        <div class="waveform" id="waveform2"></div>
+        <button class="play" data-wave="waveform2" data-src="hld2 v2.wav">▶️ Play</button>
+        <a href="hld2 v2.wav" download>Télécharger</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Bills Production. Tous droits réservés.</p>
+  </footer>
+
+  <script>
     document.addEventListener("DOMContentLoaded", function () {
-        let waves = {};
+      let waves = {};
+      const files = [
+        { id: "waveform1", src: "prod.mp3" },
+        { id: "waveform2", src: "hld2 v2.wav" },
+      ];
 
-        // Fichiers audio
-        const files = [
-            { id: 'waveform1', src: 'prod.mp3' },
-            { id: 'waveform2', src: 'hld2 v2.wav' },
-        ];
-
-        files.forEach(file => {
-            let container = document.getElementById(file.id);
-            
-            if (!container) {
-                console.error("Container non trouvé pour :", file.id);
-                return;
-            }
-
-            waves[file.id] = WaveSurfer.create({
-                container: "#" + file.id,
-                waveColor: "#00aaff",
-                progressColor: "white",
-                barWidth: 2,
-                height: 80,
-                normalize: true
-            });
-
-            waves[file.id].load(file.src);
-
-            waves[file.id].on("error", function (err) {
-                console.error("Erreur lors du chargement de", file.src, ":", err);
-                container.innerHTML = `<p style="color: red;">Impossible de charger le fichier : ${file.src}</p>`;
-            });
-
-            waves[file.id].on("ready", function () {
-                console.log(file.src, "chargé avec succès !");
-            });
+      files.forEach(file => {
+        const container = document.getElementById(file.id);
+        waves[file.id] = WaveSurfer.create({
+          container: "#" + file.id,
+          waveColor: "#00aaff",
+          progressColor: "white",
+          barWidth: 2,
+          height: 80,
+          normalize: true,
         });
+        waves[file.id].load(file.src);
 
-        document.querySelectorAll(".play").forEach(button => {
-            button.addEventListener("click", function () {
-                const waveId = button.getAttribute("data-wave");
-
-                if (!waves[waveId].isReady) {
-                    console.warn("L'audio n'est pas prêt :", waveId);
-                    return;
-                }
-
-                if (!waves[waveId].isPlaying()) {
-                    waves[waveId].play();
-                    button.textContent = "⏸️ Pause";
-                } else {
-                    waves[waveId].pause();
-                    button.textContent = "▶️ Play";
-                }
-            });
+        waves[file.id].on("ready", () => console.log(file.src + " prêt"));
+        waves[file.id].on("error", err => {
+          console.error("Erreur : ", err);
+          container.innerHTML = `<p style="color: red;">Erreur de chargement</p>`;
         });
+      });
+
+      document.querySelectorAll(".play").forEach(button => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.wave;
+          if (!waves[id]) return;
+          if (waves[id].isPlaying()) {
+            waves[id].pause();
+            button.textContent = "▶️ Play";
+          } else {
+            waves[id].play();
+            button.textContent = "⏸️ Pause";
+          }
+        });
+      });
     });
-</script>
 
+    function searchPosts() {
+      const input = document.getElementById("searchBar").value.toLowerCase();
+      const posts = document.querySelectorAll(".publication");
+      let found = false;
+
+      posts.forEach(post => {
+        const title = post.dataset.title.toLowerCase();
+        const visible = title.includes(input);
+        post.style.display = visible ? "block" : "none";
+        if (visible) found = true;
+      });
+
+      document.getElementById("noResults").style.display = found ? "none" : "block";
+    }
+  </script>
 </body>
 </html>
-
