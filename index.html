@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bureau Pirate du Web</title>
-  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="accueil.css" />
   <style>
     /* Assure que les icônes puissent être positionnées en absolute */
     .desktop .icon {
@@ -41,6 +41,7 @@
         <img src="icons/chat.png" alt="Chat" />
         <span>Chat</span>
     </div>
+
     </div>
 
   <div id="window-prods" class="window" data-window="prods" aria-hidden="true" role="dialog" aria-label="Fenêtre Prods" style="position:absolute;">
@@ -86,6 +87,8 @@
       <button class="taskbar-btn" data-window="samples" aria-pressed="false">Samples</button>
       <button class="taskbar-btn" data-window="remix" aria-pressed="false">Remix</button>
       <button class="taskbar-btn" data-window="chat" aria-pressed="false">Chat</button>
+      <span id="userDisplay">Utilisateur : <span id="usernameDisplay"></span></span>
+
     </div>
   </div>
 
@@ -634,6 +637,36 @@
     terminalPrint("> help", true);
     terminalPrint(commands.help.exec());
 
+    //parametres
+    
+    // Tu peux maintenant afficher ce nom dans une fenêtre ou un terminal
+
+    
+    document.addEventListener("DOMContentLoaded", () => {
+    const username = localStorage.getItem("pseudo") || "Anonyme";
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    if (usernameDisplay) {
+        usernameDisplay.textContent = username;
+    }
+    });
+
+    window.addEventListener("message", (event) => {
+    if (event.data?.type === "pseudoChanged") {
+        const newPseudo = event.data.newPseudo;
+        const usernameDisplay = document.getElementById("usernameDisplay");
+        if (usernameDisplay) {
+        usernameDisplay.textContent = newPseudo;
+        }
+    }
+    });
+
+
+
+
+
+
+
+
 
   </script>
 
@@ -661,6 +694,14 @@
     <iframe src="chat.html" style="width: 100%; height: 100%; border: none;"></iframe>
   </div>
   </div>
+
+
+  <!-- settings -->
+
+
+
+
+
 
 
 </body>
