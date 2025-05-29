@@ -22,20 +22,26 @@
         Wbills Production
     </div>
 
-  <div class="desktop" aria-label="Bureau virtuel">
+    <div class="desktop" aria-label="Bureau virtuel">
     <div class="icon" data-window="prods" tabindex="0" style="left: 20px; top: 20px;">
-      <img src="icons/folder-prods.png" alt="Prods" />
-      <span>Prods</span>
+        <img src="icons/folder-prods.png" alt="Prods" />
+        <span>Prods</span>
     </div>
     <div class="icon" data-window="samples" tabindex="0" style="left: 120px; top: 20px;">
-      <img src="icons/folder-samples.png" alt="Samples" />
-      <span>Samples</span>
+        <img src="icons/folder-samples.png" alt="Samples" />
+        <span>Samples</span>
     </div>
     <div class="icon" data-window="remix" tabindex="0" style="left: 220px; top: 20px;">
-      <img src="icons/folder-remix.png" alt="Remix" />
-      <span>Remix</span>
+        <img src="icons/folder-remix.png" alt="Remix" />
+        <span>Remix</span>
     </div>
-  </div>
+
+    <!-- ✅ Icône du Chat correctement intégrée dans le bureau -->
+    <div class="icon" data-window="chat" tabindex="0" style="left: 320px; top: 20px;">
+        <img src="icons/chat.png" alt="Chat" />
+        <span>Chat</span>
+    </div>
+    </div>
 
   <div id="window-prods" class="window" data-window="prods" aria-hidden="true" role="dialog" aria-label="Fenêtre Prods" style="position:absolute;">
     <div class="window-header" style="cursor: grab;">
@@ -79,6 +85,7 @@
       <button class="taskbar-btn" data-window="prods" aria-pressed="false">Prods</button>
       <button class="taskbar-btn" data-window="samples" aria-pressed="false">Samples</button>
       <button class="taskbar-btn" data-window="remix" aria-pressed="false">Remix</button>
+      <button class="taskbar-btn" data-window="chat" aria-pressed="false">Chat</button>
     </div>
   </div>
 
@@ -493,238 +500,167 @@
 
     //mediaplayer
     document.addEventListener("DOMContentLoaded", () => {
-        const mediaWindow = document.getElementById("media-player-window");
-        const mediaCanvas = document.getElementById("media-visual");
-        const mediaCtx = mediaCanvas.getContext("2d");
-        const mediaTrackName = document.getElementById("media-track-name");
-        const mediaProgress = document.getElementById("media-progress");
-        const mediaTime = document.getElementById("media-time");
+    const mediaWindow = document.getElementById("media-player-window");
+    const mediaCanvas = document.getElementById("media-visual");
+    const mediaCtx = mediaCanvas.getContext("2d");
+    const mediaTrackName = document.getElementById("media-track-name");
+    const mediaProgress = document.getElementById("media-progress");
+    const mediaTime = document.getElementById("media-time");
 
-        let visualAudio = null;
-        let audioCtx = null;
-        let analyser = null;
-        let sourceNode = null;
-        let animationFrameId = null;
-
-        function bringToFront(element) {
-            element.style.zIndex = 10000;
-        }
-
-        function openMediaPlayer(audioElement, name = "Lecture audio") {
-            mediaTrackName.textContent = name;
-
-            // Définir la taille du canvas explicitement
-            mediaCanvas.width = mediaCanvas.clientWidth;
-            mediaCanvas.height = mediaCanvas.clientHeight;
-
-            // Centrer la fenêtre
-            const centerX = window.innerWidth / 2 - mediaWindow.offsetWidth / 2;
-            const centerY = window.innerHeight / 2 - mediaWindow.offsetHeight / 2;
-            mediaWindow.style.left = `${centerX}px`;
-            mediaWindow.style.top = `${centerY}px`;
-            mediaWindow.style.display = "block";
-            bringToFront(mediaWindow);
-
-            visualAudio = audioElement;
-
-            // Créer le contexte audio si besoin
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            // Si le contexte est suspendu, le réveiller
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
-            // Connecter la source uniquement si pas déjà fait
-            try {
-                sourceNode = audioCtx.createMediaElementSource(visualAudio);
-                analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 64;
-                sourceNode.connect(analyser);
-                analyser.connect(audioCtx.destination);
-            } catch (e) {
-                // Ne rien faire si déjà connecté (évite l'erreur : "media element source already connected")
-            }
-
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-
-            const baseHue = Math.floor(Math.random() * 360);
-
-            function drawVisualizer() {
-                if (!visualAudio || visualAudio.paused || visualAudio.ended) return;
-
-                animationFrameId = requestAnimationFrame(drawVisualizer);
-
-                analyser.getByteFrequencyData(dataArray);
-
-                const width = mediaCanvas.width;
-                const height = mediaCanvas.height;
-                mediaCtx.clearRect(0, 0, width, height);
-
-                const barWidth = width / bufferLength;
-
-                for (let i = 0; i < bufferLength; i++) {
-                    const value = dataArray[i];
-                    const barHeight = (value / 255) * height;
-
-                    const hue = (baseHue + i * (360 / bufferLength)) % 360;
-                    mediaCtx.fillStyle = `hsl(${hue}, 60%, 30%)`;
-
-                    mediaCtx.fillRect(i * barWidth, height - barHeight, barWidth * 0.8, barHeight);
-                }
-
-
-
-                
-            }
-
-
-
-            drawVisualizer();
-
-            function updateProgress() {
-                if (!visualAudio) return;
-                mediaProgress.value = visualAudio.currentTime / visualAudio.duration || 0;
-                const minutes = Math.floor(visualAudio.currentTime / 60);
-                const seconds = Math.floor(visualAudio.currentTime % 60).toString().padStart(2, "0");
-                mediaTime.textContent = `${minutes}:${seconds}`;
-                if (!visualAudio.paused && !visualAudio.ended) requestAnimationFrame(updateProgress);
-            }
-
-            updateProgress();
-        }
-
-        document.querySelectorAll("audio").forEach(audio => {
-            audio.addEventListener("play", () => {
-                openMediaPlayer(audio, audio.src.split("/").pop());
-            });
-        });
-
-        // Drag de la fenêtre
-        const header = mediaWindow.querySelector(".window-header");
-        let isDragging = false;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        header.style.cursor = "grab";
-
-        header.addEventListener("mousedown", (e) => {
-            isDragging = true;
-            offsetX = e.clientX - mediaWindow.offsetLeft;
-            offsetY = e.clientY - mediaWindow.offsetTop;
-            header.style.cursor = "grabbing";
-            document.body.style.userSelect = "none";
-        });
-
-        window.addEventListener("mouseup", () => {
-            isDragging = false;
-            header.style.cursor = "grab";
-            document.body.style.userSelect = "";
-        });
-
-        window.addEventListener("mousemove", (e) => {
-            if (!isDragging) return;
-
-            let newLeft = e.clientX - offsetX;
-            let newTop = e.clientY - offsetY;
-
-            const maxLeft = window.innerWidth - mediaWindow.offsetWidth;
-            const maxTop = window.innerHeight - mediaWindow.offsetHeight;
-
-            mediaWindow.style.left = Math.max(0, Math.min(maxLeft, newLeft)) + "px";
-            mediaWindow.style.top = Math.max(0, Math.min(maxTop, newTop)) + "px";
-        });
-
-        // Fermeture de la fenêtre
-        mediaWindow.querySelector(".close-btn").addEventListener("click", () => {
-            mediaWindow.style.display = "none";
-            if (visualAudio) {
-                visualAudio.pause();
-            }
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-        });
-    });
-
-    // --- En dehors de DOMContentLoaded --- //
-
-    function findFreeWindowPosition(windows, windowWidth, windowHeight, margin = 20) {
-        const cols = Math.floor(window.innerWidth / (windowWidth + margin));
-        const rows = Math.floor(window.innerHeight / (windowHeight + margin));
-
-        const occupiedPositions = [];
-
-        windows.forEach(win => {
-            if (win.style.display === 'block') {
-                const left = parseInt(win.style.left, 10) || 0;
-                const top = parseInt(win.style.top, 10) || 0;
-                const col = Math.floor(left / (windowWidth + margin));
-                const row = Math.floor(top / (windowHeight + margin));
-                occupiedPositions.push(`${col}-${row}`);
-            }
-        });
-
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                if (!occupiedPositions.includes(`${c}-${r}`)) {
-                    return {
-                        left: c * (windowWidth + margin),
-                        top: r * (windowHeight + margin)
-                    };
-                }
-            }
-        }
-
-        return {
-            left: window.innerWidth / 2 - windowWidth / 2,
-            top: window.innerHeight / 2 - windowHeight / 2
-        };
-    }
-
-    function openWindow(name) {
-        const win = document.querySelector(`#window-${name}`);
-        if (!win) return;
-
-        if (!win.classList.contains('positioned')) {
-            const allWindows = Array.from(document.querySelectorAll('.window'));
-            const pos = findFreeWindowPosition(allWindows, win.offsetWidth, win.offsetHeight, 20);
-            win.style.left = `${pos.left}px`;
-            win.style.top = `${pos.top}px`;
-            win.classList.add('positioned');
-        }
-
-        win.style.display = 'block';
-        win.setAttribute('aria-hidden', 'false');
-        bringToFront(win);
-    }
+    let visualAudio = null;
+    let isSeeking = false;
 
     function bringToFront(element) {
         element.style.zIndex = 10000;
     }
 
+    function openMediaPlayer(audioElement, name = "Lecture audio") {
+        mediaTrackName.textContent = name;
+
+        // Centrer la fenêtre média
+        const centerX = window.innerWidth / 2 - mediaWindow.offsetWidth / 2;
+        const centerY = window.innerHeight / 2 - mediaWindow.offsetHeight / 2;
+        mediaWindow.style.left = `${centerX}px`;
+        mediaWindow.style.top = `${centerY}px`;
+        mediaWindow.style.display = "block";
+        bringToFront(mediaWindow);
+
+        visualAudio = audioElement;
+
+        // Visualiseur psychédélique sombre, généré aléatoirement
+        function drawPsychedelic() {
+        if (!visualAudio || visualAudio.paused || visualAudio.ended) return;
+        requestAnimationFrame(drawPsychedelic);
+
+        const width = mediaCanvas.width;
+        const height = mediaCanvas.height;
+        const imageData = mediaCtx.createImageData(width, height);
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+            const noise = Math.floor(Math.random() * 255);
+            const r = (noise + Math.random() * 100) % 255;
+            const g = (255 - noise + Math.random() * 100) % 255;
+            const b = (noise * Math.random()) % 255;
+
+            data[i] = r * 0.2;
+            data[i + 1] = g * 0.2;
+            data[i + 2] = b * 0.2;
+            data[i + 3] = 255;
+        }
+
+        mediaCtx.putImageData(imageData, 0, 0);
+        }
+
+        drawPsychedelic();
+
+        // Mise à jour barre progression et temps
+        function updateProgress() {
+        if (!visualAudio) return;
+        if (!isSeeking) {
+            mediaProgress.value = visualAudio.currentTime / visualAudio.duration || 0;
+            const minutes = Math.floor(visualAudio.currentTime / 60);
+            const seconds = Math.floor(visualAudio.currentTime % 60).toString().padStart(2, "0");
+            mediaTime.textContent = `${minutes}:${seconds}`;
+        }
+        if (!visualAudio.paused && !visualAudio.ended) requestAnimationFrame(updateProgress);
+        }
+        updateProgress();
+    }
+
+    mediaProgress.addEventListener("input", () => {
+        if (!visualAudio || !visualAudio.duration) return;
+        isSeeking = true;
+        const seekTime = mediaProgress.value * visualAudio.duration;
+        visualAudio.currentTime = seekTime;
+
+        const minutes = Math.floor(seekTime / 60);
+        const seconds = Math.floor(seekTime % 60).toString().padStart(2, "0");
+        mediaTime.textContent = `${minutes}:${seconds}`;
+    });
+
+    mediaProgress.addEventListener("change", () => {
+        isSeeking = false;
+    });
+
+    // Ouvre lecteur média à chaque play d’un <audio>
+    document.querySelectorAll("audio").forEach(audio => {
+        audio.addEventListener("play", () => {
+        openMediaPlayer(audio, audio.src.split("/").pop());
+        });
+    });
+
+    // Rendre la fenêtre déplaçable via la barre header
+    const header = mediaWindow.querySelector(".window-header");
+    let isDragging = false, offsetX = 0, offsetY = 0;
+
+    header.style.cursor = "grab";
+
+    header.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - mediaWindow.offsetLeft;
+        offsetY = e.clientY - mediaWindow.offsetTop;
+        header.style.cursor = "grabbing";
+        document.body.style.userSelect = "none";
+    });
+
+    window.addEventListener("mouseup", () => {
+        isDragging = false;
+        header.style.cursor = "grab";
+        document.body.style.userSelect = "";
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        let newLeft = e.clientX - offsetX;
+        let newTop = e.clientY - offsetY;
+
+        const maxLeft = window.innerWidth - mediaWindow.offsetWidth;
+        const maxTop = window.innerHeight - mediaWindow.offsetHeight;
+
+        if (newLeft < 0) newLeft = 0;
+        if (newTop < 0) newTop = 0;
+        if (newLeft > maxLeft) newLeft = maxLeft;
+        if (newTop > maxTop) newTop = maxTop;
+
+        mediaWindow.style.left = newLeft + "px";
+        mediaWindow.style.top = newTop + "px";
+    });
+
+    });
+
     // Simule la commande "help" au démarrage
     terminalPrint("> help", true);
     terminalPrint(commands.help.exec());
 
+
   </script>
 
-    <div id="media-player-window" class="window">
-    <div class="window-header">
-        <div>Lecteur audio</div>
-        <button class="close-btn" aria-label="Fermer">&times;</button>
+    <div id="media-player-window" class="window" style="display: none; position: absolute; width: 400px; height: 300px;">
+    <div class="window-header" style="cursor: grab;">
+        <span>Lecteur Multimédia</span>
+        <button class="close-btn" onclick="document.getElementById('media-player-window').style.display='none'">&times;</button>
     </div>
-    <canvas id="media-visual" width="360" height="160"></canvas>
-    <progress id="media-progress" max="1" value="0"></progress>
-    <div id="media-time">0:00</div>
-    <div id="media-track-name">...</div>
+    <div class="window-content" style="height: calc(100% - 30px); display: flex; flex-direction: column; justify-content: space-between;">
+        <canvas id="media-visual" width="400" height="180" style="background: black;"></canvas>
+        <div style="padding: 5px; font-size: 0.9em; text-align: center;">
+        <div id="media-track-name">Nom du son</div>
+        <progress id="media-progress" value="0" max="1" style="width: 100%;"></progress>
+        <div id="media-time" style="font-family: monospace;">0:00</div>
+        </div>
+    </div>
     </div>
 
-
-
+    <div id="window-chat" class="window" style="display: none; position: absolute; width: 600px; height: 400px;">
+  <div class="window-header" style="cursor: grab;">
+    <span>Chat en ligne</span>
+    <button class="close-btn" onclick="document.getElementById('window-chat').style.display='none'">&times;</button>
+  </div>
+  <div class="window-content" style="height: calc(100% - 30px);">
+    <iframe src="chat.html" style="width: 100%; height: 100%; border: none;"></iframe>
+  </div>
+  </div>
 
 
 </body>
