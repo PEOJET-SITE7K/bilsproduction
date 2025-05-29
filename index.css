@@ -9,19 +9,24 @@ html {
     color: #0f0;
     overflow: hidden;
     user-select: none;
+    display: flex;
+    flex-direction: column;
 }
+
+
 
 /* Titre Glitch */
 .glitch-text {
-    font-size: 3em;
+    font-size: clamp(1.5rem, 3vw, 3rem);
     font-weight: bold;
     text-align: center;
-    margin: 1rem 0;
+    margin-block: 1rem;
     color: #0f0;
     position: relative;
     animation: glitch 2s infinite;
     user-select: text;
 }
+
 
 @keyframes glitch {
     0% {
@@ -49,17 +54,21 @@ html {
     }
 }
 
-/* Bureau */
 .desktop {
     display: flex;
     justify-content: flex-start;
-    gap: 2rem;
-    padding: 1rem 2rem;
-    height: calc(100% - 140px);
-    /* ajusté en fonction de la nouvelle taille de la taskbar */
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    height: calc(100vh - 3.5rem - 2rem);
+    /* 3.5rem = taskbar height + marge, 2rem = padding vertical */
+    max-width: 100vw;
+    box-sizing: border-box;
     align-items: flex-start;
     background: linear-gradient(135deg, #050505, #111);
     user-select: none;
+    flex-wrap: wrap;
+    overflow: hidden;
+    /* empêcher scroll horizontal */
 }
 
 /* Icônes */
@@ -69,20 +78,27 @@ html {
     align-items: center;
     cursor: pointer;
     color: #0f0;
-    width: 120px;
-    font-size: 1.2em;
+    width: clamp(5rem, 7vw, 7.5rem);
+    font-size: clamp(0.9em, 1vw, 1.2em);
     outline: none;
 }
 
 .icon img {
-    width: 96px;
-    height: 96px;
-    margin-bottom: 8px;
+    width: 80%;
+    height: auto;
+    margin-bottom: 0.4rem;
+    filter: drop-shadow(0 0 2px #0f0);
+}
+
+.icon img {
+    width: 6rem;
+    height: 6rem;
+    margin-bottom: 0.5rem;
     filter: drop-shadow(0 0 2px #0f0);
 }
 
 .icon span {
-    margin-top: 0.5rem;
+    margin-top: 0.3rem;
     font-size: 0.9rem;
     text-align: center;
     user-select: text;
@@ -97,8 +113,8 @@ html {
 /* Fenêtres */
 .window {
     position: fixed;
-    width: 320px;
-    height: 250px;
+    width: clamp(18rem, 22vw, 22rem);
+    height: clamp(14rem, 30vh, 18rem);
     background: #050505cc;
     border: 1px solid #0f0;
     box-shadow: 0 0 10px #0f0;
@@ -109,10 +125,26 @@ html {
     border-radius: 6px;
     backdrop-filter: blur(8px);
     z-index: 1000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
 }
 
 .window.active {
     display: flex;
+}
+
+@media (max-width: 600px) {
+    .window {
+        width: 90vw;
+        height: 50vh;
+        top: auto;
+        bottom: 3.5rem;
+        /* au-dessus taskbar */
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 
 .window-header {
@@ -150,34 +182,34 @@ html {
     filter: drop-shadow(0 0 3px #0f0);
 }
 
-/* Scrollbar personnalisée */
-.window-content::-webkit-scrollbar {
-    width: 8px;
+/* Scrollbar personnalisée pour le bureau */
+.desktop::-webkit-scrollbar {
+    width: 0.5rem;
 }
 
-.window-content::-webkit-scrollbar-thumb {
+.desktop::-webkit-scrollbar-thumb {
     background: #0f0;
-    border-radius: 4px;
+    border-radius: 0.25rem;
 }
 
-.window-content::-webkit-scrollbar-track {
+
+.desktop::-webkit-scrollbar-track {
     background: transparent;
 }
 
-/* Barre des tâches */
+
 .taskbar {
     position: fixed;
+    inset-inline: 0;
     bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    /* ancienne taille rétablie */
-    background: rgba(0, 0, 0, 0.8);
+    height: 3.5rem;
+    /* un peu plus haute pour meilleure visibilité */
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    z-index: 999;
+    padding: 0 1.25rem;
+    z-index: 9999;
     border-top: 1px solid #0f0;
     box-shadow: 0 -2px 10px #000;
     font-size: 1em;
@@ -185,25 +217,24 @@ html {
     font-weight: bold;
 }
 
-.taskbar-left {
+.taskbar-left,
+.taskbar-center {
     display: flex;
     align-items: center;
     flex: 1;
 }
 
 .taskbar-center {
-    display: flex;
-    align-items: center;
     justify-content: center;
-    flex: 1;
-    gap: 10px;
+    gap: 0.625rem;
 }
 
 .taskbar-btn {
     background: transparent;
     border: 1px solid #0f0;
     color: #0f0;
-    padding: 6px 12px;
+    padding-block: 0.375rem;
+    padding-inline: 0.75rem;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9em;
@@ -218,29 +249,40 @@ html {
     box-shadow: 0 0 10px #0f0;
 }
 
-/* Terminal */
 #terminal-overlay {
     position: fixed;
-    bottom: 40px;
-    /* ajusté selon hauteur taskbar */
-    left: 10px;
-    width: 400px;
-    height: 150px;
+    bottom: 3.5rem;
+    /* juste au-dessus de la taskbar */
+    left: 1rem;
+    width: clamp(15rem, 25vw, 25rem);
+    max-width: calc(100vw - 2rem);
+    height: 10rem;
     background: rgba(0, 30, 0, 0.8);
     border: 1px solid #0f0;
     font-family: monospace;
-    font-size: 0.85rem;
+    font-size: clamp(0.7rem, 1vw, 0.85rem);
     color: #0f0;
     display: flex;
     flex-direction: column;
-    padding: 5px;
+    padding: 0.3rem 0.5rem;
     overflow-y: auto;
     box-shadow: 0 0 15px #0f0;
     user-select: text;
     border-radius: 5px;
     outline: none;
     z-index: 2000;
+    box-sizing: border-box;
 }
+
+@media (max-width: 600px) {
+    #terminal-overlay {
+        width: 90vw;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 9rem;
+    }
+}
+
 
 #terminal-output {
     flex: 1;
@@ -257,7 +299,7 @@ html {
     border: none;
     border-top: 1px solid #0f0;
     color: #0f0;
-    padding: 4px;
+    padding: 0.25rem;
     outline: none;
     font-family: monospace;
     font-size: 0.9rem;
@@ -266,10 +308,7 @@ html {
 /* Particules */
 #particles {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
     pointer-events: none;
     z-index: 0;
 }
@@ -277,10 +316,7 @@ html {
 /* Effet scanlines */
 #scanlines {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    inset: 0;
     pointer-events: none;
     background: repeating-linear-gradient(0deg,
             rgba(0, 255, 0, 0.02),
@@ -294,16 +330,16 @@ html {
 /* Réseaux sociaux */
 #social-icons {
     position: fixed;
-    top: 10px;
-    right: 10px;
+    top: 0.625rem;
+    right: 0.625rem;
     display: flex;
-    gap: 12px;
+    gap: 0.75rem;
     z-index: 2100;
 }
 
 #social-icons a img {
-    width: 24px;
-    height: 24px;
+    width: 1.5rem;
+    height: 1.5rem;
     filter: drop-shadow(0 0 1px #0f0);
     transition: transform 0.2s ease;
 }
@@ -321,228 +357,128 @@ html {
     left: 0;
     z-index: 10;
     width: 100%;
-    height: 100px;
+    height: 6.25rem;
     pointer-events: none;
     background: transparent;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Media Player */
 #media-player-window {
-    background-color: #000000;
+    background-color: #000;
     color: #33ff33;
     font-family: 'Courier New', Courier, monospace;
     border: 2px solid #33ff33;
     box-shadow: 0 0 15px #33ff33cc;
     user-select: none;
-    width: 400px;
-    height: 250px;
+    width: 25rem;
+    height: 15.625rem;
     position: fixed;
     z-index: 10000;
     display: none;
-    overflow: hidden;
-    border-radius: 0;
+    flex-direction: column;
+    border-radius: 8px;
+    backdrop-filter: blur(6px);
 }
 
-/* Barre de titre */
-#media-player-window .window-header {
-    background-color: #001100;
-    color: #33ff33;
-    padding: 6px 10px;
+#media-player-window.active {
+    display: flex;
+}
+
+#media-player-header {
+    background-color: #033;
+    color: #0f0;
+    padding: 0.3rem 0.7rem;
     font-weight: bold;
-    font-family: 'Courier New', Courier, monospace;
-    cursor: grab;
-    user-select: none;
-    border-bottom: 1px solid #33ff33;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    text-shadow: 0 0 2px #00ff00;
+    cursor: move;
+    border-bottom: 1px solid #0f0;
+    border-radius: 8px 8px 0 0;
 }
 
-/* Bouton fermeture */
-#media-player-window .close-btn {
+#media-player-header button.close-btn {
     background: transparent;
     border: none;
-    color: #33ff33;
+    color: #0f0;
+    font-size: 1.2rem;
     font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
-    user-select: none;
-    padding: 0 6px;
-    transition: color 0.3s ease;
+    line-height: 1;
 }
 
-#media-player-window .close-btn:hover {
-    color: #00ff00;
+#media-player-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Canvas visualiseur */
-#media-visual {
-    display: block;
-    margin: 10px auto;
-    background: #000;
-    width: 360px;
-    height: 160px;
-    border: 1px solid #33ff33;
-    position: relative;
-    box-shadow: 0 0 8px #33ff33aa;
-}
-
-/* scanlines CRT */
-#media-visual::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background: repeating-linear-gradient(to bottom,
-            transparent 0px,
-            transparent 2px,
-            rgba(0, 255, 0, 0.05) 3px,
-            transparent 4px);
-    animation: scanlines 1s linear infinite;
-    z-index: 2;
-}
-
-/* Nom du son */
-#media-track-name {
-    font-weight: normal;
-    font-size: 14px;
-    padding: 4px 10px;
+#media-player-title {
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
     text-align: center;
-    letter-spacing: 0.05em;
-    text-shadow: 0 0 2px #00ff00;
-    position: relative;
-    z-index: 1;
+    text-shadow: 0 0 6px #0f0;
+}
+
+#media-player-visual {
+    width: 100%;
+    flex: 1;
+    background: #111;
+    border: 1px solid #0f0;
+    border-radius: 6px;
+    filter: drop-shadow(0 0 10px #0f0);
 }
 
 /* Barre de progression */
-#media-progress {
-    width: 90%;
-    margin: 8px auto;
-    display: block;
-    appearance: none;
-    height: 8px;
-    border-radius: 4px;
-    background: #001a00;
-    outline: none;
-    cursor: pointer;
-    border: 1px solid #33ff33;
-    box-shadow: 0 0 4px #00ff00aa;
+#media-player-progress {
+    width: 100%;
+    height: 6px;
+    background: #022002;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.4rem;
 }
 
-#media-progress::-webkit-slider-thumb {
-    appearance: none;
-    width: 12px;
-    height: 16px;
-    background: #33ff33;
-    cursor: pointer;
-    border-radius: 2px;
-    border: none;
-    margin-top: -4px;
-}
-
-#media-progress::-moz-range-thumb {
-    width: 12px;
-    height: 16px;
-    background: #33ff33;
-    cursor: pointer;
-    border-radius: 2px;
-    border: none;
+#media-player-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #0f0 0%, #033 100%);
+    width: 0%;
+    transition: width 0.1s linear;
 }
 
 /* Temps écoulé */
-#media-time {
-    font-size: 13px;
+#media-player-time {
+    font-size: 0.75rem;
+    color: #0f0;
+    margin-top: 0.2rem;
     text-align: center;
-    color: #33ff33;
-    font-family: 'Courier New', Courier, monospace;
-    margin-top: 6px;
-    user-select: none;
-    text-shadow: 0 0 2px #00ff00;
 }
 
-/* Curseur clignotant */
-@keyframes blink {
-
-    0%,
-    50%,
-    100% {
-        opacity: 1;
+/* Responsive */
+@media (max-width: 600px) {
+    .desktop {
+        padding: 1rem;
+        gap: 1rem;
     }
 
-    25%,
-    75% {
-        opacity: 0;
+    .icon {
+        width: 5rem;
+        font-size: 1rem;
+    }
+
+    .icon img {
+        width: 4rem;
+        height: 4rem;
     }
 }
 
-#media-track-name::after {
-    content: "_";
-    display: inline-block;
-    margin-left: 4px;
-    animation: blink 1s steps(2, start) infinite;
-}
-
-/* Animation scanlines */
-@keyframes scanlines {
-    0% {
-        background-position-y: 0;
-    }
-
-    100% {
-        background-position-y: 4px;
-    }
-}
-
-
-
-
-/* chat */
-.window {
-    position: absolute;
-    width: 300px;
-    height: 400px;
-    background: #111;
-    color: #0f0;
-    border: 1px solid #0f0;
-    padding: 10px;
-    z-index: 1000;
-    resize: both;
-    overflow: auto;
-}
-
-.hidden {
-    display: none;
-}
-
-#chat-messages {
-    height: 250px;
-    overflow-y: scroll;
-    background: #000;
-    padding: 5px;
-}
-
-textarea,
-input {
-    width: 100%;
-    margin-top: 5px;
-    background: #222;
-    color: #0f0;
-    border: none;
+/* Container principal */
+#main-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
