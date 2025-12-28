@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat</title>
+  <style>
+    :root{
+      --stroke:rgba(255,255,255,.08);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.6);
+      --accent:#7c5cff;
+      --accent2:#00d4ff;
+      --danger:#ff4d6d;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --r:18px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 15% 10%, rgba(124,92,255,.18), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(0,212,255,.12), transparent 60%),
+        linear-gradient(180deg, #060812, #050711);
+      overflow:hidden;
+    }
+
+    .wrap{
+      height:100%;
+      display:flex;
+      justify-content:center;
+      align-items:stretch;
+      padding:14px;
+    }
+
+    .app{
+      width:min(1100px, 100%);
+      height:100%;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(12,18,34,.92), rgba(10,16,32,.88));
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      backdrop-filter: blur(12px);
+      position:relative;
+      isolation:isolate;
+    }
+
+    .top{
+      height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      border-bottom:1px solid var(--stroke);
+      gap:10px;
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+      min-width:0;
+    }
+    .title .t{
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .title .s{
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .actions{ display:flex; gap:8px; flex:0 0 auto; }
+
+    .btn{
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      height:38px;
+      padding:0 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:750;
+      font-size:13px;
+    }
+    .btn:hover{ border-color:rgba(124,92,255,.35); }
+    .btn.primary{
+      background:linear-gradient(90deg, rgba(124,92,255,.22), rgba(0,212,255,.14));
+      border-color:rgba(124,92,255,.25);
+    }
+    .btn.danger:hover{ border-color:rgba(255,77,109,.45); }
+
+    .main{
+      flex:1;
+      overflow:auto;
+      padding:14px;
+      scroll-behavior:smooth;
+      position:relative;
+      z-index:1;
+    }
+
+    .day{
+      display:flex;
+      justify-content:center;
+      margin:10px 0 14px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .day span{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.16);
+    }
+
+    .row{
+      display:flex;
+      margin:10px 0;
+      gap:10px;
+    }
+    .row.me{ justify-content:flex-end; }
+
+    .bubble{
+      max-width:min(720px, 86%);
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.14);
+      border-radius:16px;
+      padding:10px 12px;
+
+      /* IMPORTANT: on réserve de la place pour la capsule de réactions => ne cache pas les messages */
+      padding-bottom:44px;
+
+      overflow:visible;
+      position:relative;
+
+      /* stacking propre pour le picker */
+      z-index:0;
+      isolation:isolate;
+    }
+    .row.me .bubble{
+      border-color:rgba(124,92,255,.28);
+      background:linear-gradient(180deg, rgba(124,92,255,.16), rgba(0,212,255,.08));
+    }
+
+    .meta{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+    }
+    .meta .left{
+      min-width:0;
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+    }
+    .meta .p{
+      font-size:12px;
+      font-weight:800;
+      color:rgba(234,240,255,.72);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:220px;
+    }
+    .meta .time{
+      font-size:11px;
+      color:rgba(234,240,255,.45);
+      white-space:nowrap;
+    }
+
+    .meta .right{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex:0 0 auto;
+    }
+
+    .toolbtn{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.16);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      user-select:none;
+      color:rgba(234,240,255,.9);
+      font-weight:900;
+      line-height:1;
+    }
+    .toolbtn:hover{ border-color:rgba(0,212,255,.28); }
+    .toolbtn.danger:hover{ border-color:rgba(255,77,109,.45); }
+
+    .txt{
+      font-size:14px;
+      line-height:1.45;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+    .txt a{
+      color:rgba(0,212,255,.92);
+      text-decoration:none;
+      border-bottom:1px solid rgba(0,212,255,.25);
+    }
+    .txt a:hover{ border-bottom-color:rgba(0,212,255,.55); }
+
+    .bubble img{
+      width:100%;
+      height:auto;
+      display:block;
+      border-radius:14px;
+      border:1px solid var(--stroke);
+    }
+
+    /* RÉSUMÉ RÉACTIONS: DANS la bulle (donc ne cache pas / ne sort pas), scroll si y’en a beaucoup */
+    .reactSummary{
+      position:absolute;
+      bottom:10px;
+      right:10px;
+
+      display:flex;
+      gap:6px;
+      align-items:center;
+
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 25px rgba(0,0,0,.35);
+
+      max-width:calc(100% - 20px);
+      overflow-x:auto;
+      overflow-y:hidden;
+      white-space:nowrap;
+
+      z-index:20;
+    }
+    .reactSummary::-webkit-scrollbar{ height:6px; }
+    .reactSummary::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.08); border-radius:999px; }
+
+    /* message à gauche: capsule alignée à gauche (sinon elle peut déborder et être cachée) */
+    .row:not(.me) .reactSummary{
+      left:10px;
+      right:auto;
+    }
+
+    .rchip{
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+      color:rgba(234,240,255,.92);
+      height:26px;
+      padding:0 8px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-weight:900;
+      font-size:13px;
+      user-select:none;
+      cursor:pointer;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .rchip:hover{ border-color:rgba(0,212,255,.25); }
+    .rchip.mine{
+      border-color:rgba(124,92,255,.35);
+      background:linear-gradient(90deg, rgba(124,92,255,.18), rgba(0,212,255,.10));
+    }
+    .rchip .c{ font-size:12px; opacity:.85; }
+
+    /* PICKER: toujours au-dessus, et à gauche pour les messages de gauche */
+    .picker{
+      position:absolute;
+      top:34px;
+      right:10px;
+
+      z-index:80;
+      display:none;
+      gap:6px;
+
+      padding:8px;
+      border-radius:14px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 45px rgba(0,0,0,.45);
+
+      max-width:calc(100% - 20px);
+      flex-wrap:wrap;
+    }
+
+    .row:not(.me) .picker{
+      left:10px;
+      right:auto;
+    }
+
+    .picker.show{ display:flex; }
+    .pbtn{
+      width:34px;
+      height:32px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.18);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      user-select:none;
+      font-size:16px;
+    }
+    .pbtn:hover{ border-color:rgba(124,92,255,.35); }
+
+    .bottom{
+      border-top:1px solid var(--stroke);
+      padding:10px 12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+      background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.10));
+      position:relative;
+      z-index:2;
+    }
+
+    .box{
+      flex:1;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.16);
+      border-radius:14px;
+      padding:10px 10px;
+      min-width:0;
+    }
+
+    textarea{
+      flex:1;
+      border:0;
+      outline:0;
+      background:transparent;
+      color:var(--text);
+      resize:none;
+      min-height:22px;
+      max-height:140px;
+      font-size:14px;
+      line-height:1.4;
+      padding:0;
+    }
+
+    .send{
+      width:92px;
+      height:42px;
+      border-radius:14px;
+      border:1px solid rgba(124,92,255,.25);
+      background:linear-gradient(90deg, rgba(124,92,255,.22), rgba(0,212,255,.14));
+      color:var(--text);
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .disabled{ opacity:.55; pointer-events:none; }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.45);
+      color:rgba(234,240,255,.85);
+      display:none;
+      max-width:min(560px, 92vw);
+      text-align:center;
+      box-shadow: 0 12px 35px rgba(0,0,0,.45);
+      z-index:999;
+    }
+    .toast.show{ display:block; }
+
+    .modalBack{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      place-items:center;
+      padding:14px;
+      z-index:999;
+    }
+    .modalBack.show{ display:grid; }
+
+    .modal{
+      width:min(520px, 100%);
+      border-radius:16px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(12,18,34,.96), rgba(10,16,32,.92));
+      box-shadow:var(--shadow);
+      padding:12px;
+    }
+
+    .modalHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .modalHead .h{ font-weight:900; font-size:14px; }
+
+    .in{
+      width:100%;
+      height:42px;
+      border-radius:12px;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      outline:none;
+      padding:0 12px;
+      font-size:14px;
+    }
+
+    .grid{ display:grid; gap:10px; margin-top:10px; }
+    .grid2{ display:grid; gap:10px; grid-template-columns: 1fr 1fr; }
+
+    @media (max-width:520px){
+      .wrap{ padding:0; }
+      .app{ border-radius:0; border-left:0; border-right:0; }
+      .main{ padding:12px; }
+      .bubble{ max-width:90%; padding-bottom:46px; }
+      .send{ width:82px; }
+      .grid2{ grid-template-columns: 1fr; }
+      .meta .p{ max-width:160px; }
+      .picker{ top:32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="app">
+      <div class="top">
+        <div class="title">
+          <div class="t" id="roomTitle">chat</div>
+          <div class="s" id="meLine">...</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="helpBtn">raccourcis</button>
+          <button class="btn" id="pseudoBtn">pseudo</button>
+          <button class="btn danger" id="adminBtn">admin</button>
+        </div>
+      </div>
+
+      <div class="main" id="messages"></div>
+
+      <div class="bottom" id="composer">
+        <div class="box">
+          <textarea id="input" placeholder="message..." rows="1"></textarea>
+        </div>
+        <button class="send" id="send">envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modalBack" id="adminBack">
+    <div class="modal">
+      <div class="modalHead">
+        <div class="h">admin</div>
+        <button class="btn" id="closeAdmin">fermer</button>
+      </div>
+
+      <div class="grid">
+        <input class="in" id="adminPass" type="password" placeholder="mot de passe" />
+        <button class="btn primary" id="unlock">ok</button>
+      </div>
+
+      <div class="grid" id="adminArea" style="display:none;margin-top:12px;">
+        <input class="in" id="banPseudo" placeholder="pseudo (ban/unban)" />
+        <div class="grid2">
+          <button class="btn danger" id="ban">ban</button>
+          <button class="btn" id="unban">unban</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalBack" id="helpBack">
+    <div class="modal">
+      <div class="modalHead">
+        <div class="h">format messages</div>
+        <button class="btn" id="closeHelp">fermer</button>
+      </div>
+      <div class="txt" style="color:rgba(234,240,255,.8)">
+        img https://site.com/image.png<br>
+        link https://site.com | texte<br><br>
+        aussi accepté:<br>
+        &lt;img src="https://..."&gt;<br>
+        &lt;a href="https://..."&gt;texte&lt;/a&gt;<br><br>
+        réactions: clique sur ✚ sur un message puis choisis un emoji
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp,
+      doc, setDoc, getDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDz4e2pVaX2hFS6wdVhrVWocEdAN73uRuU",
+      authDomain: "billsproduction-8925d.firebaseapp.com",
+      projectId: "billsproduction-8925d",
+      storageBucket: "billsproduction-8925d.appspot.com",
+      messagingSenderId: "233562539493",
+      appId: "1:233562539493:web:b4f5abafbef1cbdc68db0c"
+    };
+
+    const ADMIN_PASSWORD = "wbills";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const $ = (id) => document.getElementById(id);
+
+    const messagesEl = $("messages");
+    const inputEl = $("input");
+    const sendEl = $("send");
+    const composerEl = $("composer");
+    const toastEl = $("toast");
+
+    const pseudoBtn = $("pseudoBtn");
+    const meLine = $("meLine");
+
+    const adminBack = $("adminBack");
+    const adminBtn = $("adminBtn");
+    const closeAdmin = $("closeAdmin");
+    const adminPass = $("adminPass");
+    const unlock = $("unlock");
+    const adminArea = $("adminArea");
+    const banPseudo = $("banPseudo");
+    const banBtn = $("ban");
+    const unbanBtn = $("unban");
+
+    const helpBtn = $("helpBtn");
+    const helpBack = $("helpBack");
+    const closeHelp = $("closeHelp");
+
+    let banned = false;
+    let banUnsub = null;
+
+    const QUICK_EMOJIS = ["❤️","🔥","😂","😮","👍"];
+
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      setTimeout(() => toastEl.classList.remove("show"), 1600);
+    }
+
+    function esc(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function safeUrl(url){
+      try{
+        const u = new URL(url, window.location.origin);
+        if(u.protocol !== "http:" && u.protocol !== "https:") return null;
+        return u.href;
+      }catch{
+        return null;
+      }
+    }
+
+    function renderRich(raw){
+      const msg = String(raw || "").trim();
+
+      if (msg.toLowerCase().startsWith("img ")){
+        const url = safeUrl(msg.slice(4).trim());
+        if(!url) return `<div class="txt">${esc(msg)}</div>`;
+        return `<img src="${url}" alt="image" loading="lazy">`;
+      }
+
+      if (msg.toLowerCase().startsWith("link ")){
+        const rest = msg.slice(5).trim();
+        const parts = rest.split("|");
+        const url = safeUrl((parts[0] || "").trim());
+        const text = ((parts[1] || parts[0] || "").trim());
+        if(!url) return `<div class="txt">${esc(msg)}</div>`;
+        return `<div class="txt"><a href="${url}" target="_blank" rel="noopener noreferrer">${esc(text)}</a></div>`;
+      }
+
+      const imgMatch = msg.match(/^<img\s+src\s*=\s*["']([^"']+)["']\s*\/?>$/i);
+      if(imgMatch){
+        const url = safeUrl(imgMatch[1].trim());
+        if(!url) return `<div class="txt">${esc(msg)}</div>`;
+        return `<img src="${url}" alt="image" loading="lazy">`;
+      }
+
+      const aMatch = msg.match(/^<a\s+href\s*=\s*["']([^"']+)["']\s*>([\s\S]*?)<\/a>$/i);
+      if(aMatch){
+        const url = safeUrl(aMatch[1].trim());
+        const text = (aMatch[2] || "").trim() || url;
+        if(!url) return `<div class="txt">${esc(msg)}</div>`;
+        return `<div class="txt"><a href="${url}" target="_blank" rel="noopener noreferrer">${esc(text)}</a></div>`;
+      }
+
+      const safeText = esc(msg);
+      const linked = safeText.replace(
+        /(https?:\/\/[^\s<]+)/g,
+        (m) => `<a href="${m}" target="_blank" rel="noopener noreferrer">${m}</a>`
+      );
+      return `<div class="txt">${linked.replaceAll("\n","<br>")}</div>`;
+    }
+
+    function getPseudo(){
+      return localStorage.getItem("pseudo") || "";
+    }
+
+    function setPseudo(p){
+      localStorage.setItem("pseudo", p);
+      meLine.textContent = "@" + p;
+      listenBan(p);
+    }
+
+    function fmtTime(ts){
+      try{
+        const d = ts?.toDate ? ts.toDate() : null;
+        if(!d) return "";
+        const hh = String(d.getHours()).padStart(2,"0");
+        const mm = String(d.getMinutes()).padStart(2,"0");
+        return hh + ":" + mm;
+      }catch{ return ""; }
+    }
+
+    function fmtDay(ts){
+      try{
+        const d = ts?.toDate ? ts.toDate() : null;
+        if(!d) return "";
+        const dd = String(d.getDate()).padStart(2,"0");
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const yyyy = d.getFullYear();
+        return dd + "/" + mm + "/" + yyyy;
+      }catch{ return ""; }
+    }
+
+    function nearBottom(el){
+      return (el.scrollHeight - el.scrollTop - el.clientHeight) < 140;
+    }
+
+    function setBannedState(on){
+      banned = on;
+      composerEl.classList.toggle("disabled", on);
+      inputEl.placeholder = on ? "banni" : "message...";
+      if(on) toast("banni");
+    }
+
+    function listenBan(pseudo){
+      const p = (pseudo || "").trim().toLowerCase();
+      if(!p) return;
+
+      if (banUnsub) banUnsub();
+      const banRef = doc(db, "bans", p);
+
+      banUnsub = onSnapshot(banRef, (snap) => {
+        setBannedState(snap.exists());
+      }, () => {
+        setBannedState(false);
+      });
+    }
+
+    async function isBannedNow(pseudo){
+      const p = (pseudo || "").trim().toLowerCase();
+      if(!p) return false;
+      try{
+        const snap = await getDoc(doc(db,"bans", p));
+        return snap.exists();
+      }catch{
+        return false;
+      }
+    }
+
+    async function sendMessage(text){
+      const pseudo = getPseudo();
+      if(!pseudo) return;
+
+      if(banned || await isBannedNow(pseudo)){
+        setBannedState(true);
+        return;
+      }
+
+      await addDoc(collection(db, "messages"), {
+        pseudo,
+        message: text,
+        timestamp: serverTimestamp(),
+        deleted: false,
+        reactions: {}
+      });
+    }
+
+    async function deleteMyMessage(messageId){
+      const pseudo = getPseudo();
+      if(!pseudo || !messageId) return;
+      await updateDoc(doc(db,"messages", messageId), {
+        deleted: true,
+        deletedAt: serverTimestamp(),
+        deletedBy: pseudo
+      });
+    }
+
+    async function toggleReaction(messageId, emoji, hasReacted){
+      const pseudo = getPseudo();
+      if(!pseudo || !messageId) return;
+
+      const field = `reactions.${emoji}`;
+      await updateDoc(doc(db,"messages", messageId), {
+        [field]: hasReacted ? arrayRemove(pseudo) : arrayUnion(pseudo)
+      });
+    }
+
+    function autoresize(){
+      inputEl.style.height = "auto";
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + "px";
+    }
+
+    function reactionsSummaryHtml(reactionsObj, myPseudo){
+      const r = reactionsObj || {};
+      const keys = Object.keys(r).filter((k) => Array.isArray(r[k]) && r[k].length > 0);
+      if(keys.length === 0) return "";
+
+      keys.sort((a,b) => (r[b]?.length||0) - (r[a]?.length||0));
+
+      const chips = keys.map((emoji) => {
+        const list = r[emoji] || [];
+        const mine = list.map(x => String(x).toLowerCase()).includes(String(myPseudo).toLowerCase());
+        const count = list.length;
+        return `<div class="rchip ${mine ? "mine" : ""}" data-chip="${esc(emoji)}">
+                  <span>${esc(emoji)}</span><span class="c">${count}</span>
+                </div>`;
+      }).join("");
+
+      return `<div class="reactSummary">${chips}</div>`;
+    }
+
+    function pickerHtml(){
+      return `
+        <div class="picker" data-picker="1">
+          ${QUICK_EMOJIS.map(e => `<button class="pbtn" data-emoji="${esc(e)}" title="réagir">${esc(e)}</button>`).join("")}
+        </div>
+      `;
+    }
+
+    function renderMessage(data, id){
+      const myPseudo = getPseudo();
+      const author = data.pseudo || "";
+      const me = String(author).toLowerCase() === String(myPseudo).toLowerCase();
+      const time = fmtTime(data.timestamp);
+
+      if (data.deleted){
+        return `
+          <div class="row ${me ? "me" : ""}" data-id="${id}" data-pseudo="${esc(author)}">
+            <div class="bubble">
+              <div class="meta">
+                <div class="left">
+                  <div class="p">${esc(author)}</div>
+                  <div class="time">${time}</div>
+                </div>
+              </div>
+              <div class="txt" style="color:rgba(234,240,255,.5)">(supprimé)</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const body = renderRich(data.message || "");
+      const summary = reactionsSummaryHtml(data.reactions, myPseudo);
+
+      return `
+        <div class="row ${me ? "me" : ""}" data-id="${id}" data-pseudo="${esc(author)}">
+          <div class="bubble">
+            <div class="meta">
+              <div class="left">
+                <div class="p">${esc(author)}</div>
+                <div class="time">${time}</div>
+              </div>
+              <div class="right">
+                <button class="toolbtn" data-open="1" title="réagir">✚</button>
+                ${me ? `<button class="toolbtn danger" data-del="1" title="supprimer">🗑</button>` : ``}
+              </div>
+            </div>
+
+            ${body}
+
+            ${pickerHtml()}
+            ${summary}
+          </div>
+        </div>
+      `;
+    }
+
+    function openAdmin(){ adminBack.classList.add("show"); adminPass.value=""; adminArea.style.display="none"; }
+    function closeAdminModal(){ adminBack.classList.remove("show"); }
+
+    async function ban(p){
+      const x = (p||"").trim().toLowerCase();
+      if(!x) return;
+      await setDoc(doc(db,"bans", x), { pseudo:x, at: serverTimestamp() });
+    }
+    async function unban(p){
+      const x = (p||"").trim().toLowerCase();
+      if(!x) return;
+      await deleteDoc(doc(db,"bans", x));
+    }
+
+    function openHelp(){ helpBack.classList.add("show"); }
+    function closeHelpModal(){ helpBack.classList.remove("show"); }
+
+    function closeAllPickers(exceptBubble){
+      document.querySelectorAll(".picker.show").forEach((p) => {
+        const b = p.closest(".bubble");
+        if(exceptBubble && b === exceptBubble) return;
+        p.classList.remove("show");
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      let p = getPseudo();
+      if(!p){
+        p = (prompt("pseudo") || "").trim();
+        if(!p) p = "anonyme";
+        setPseudo(p);
+      } else {
+        meLine.textContent = "@" + p;
+        listenBan(p);
+      }
+
+      helpBtn.addEventListener("click", openHelp);
+      closeHelp.addEventListener("click", closeHelpModal);
+      helpBack.addEventListener("click", (e) => { if(e.target === helpBack) closeHelpModal(); });
+
+      pseudoBtn.addEventListener("click", () => {
+        const np = (prompt("pseudo") || "").trim();
+        if(!np) return;
+        setPseudo(np);
+        toast("ok");
+      });
+
+      sendEl.addEventListener("click", async () => {
+        const text = inputEl.value.trim();
+        if(!text) return;
+        await sendMessage(text);
+        inputEl.value = "";
+        autoresize();
+      });
+
+      inputEl.addEventListener("input", autoresize);
+      inputEl.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" && !e.shiftKey){
+          e.preventDefault();
+          sendEl.click();
+        }
+      });
+
+      adminBtn.addEventListener("click", openAdmin);
+      closeAdmin.addEventListener("click", closeAdminModal);
+      adminBack.addEventListener("click", (e) => { if(e.target === adminBack) closeAdminModal(); });
+
+      unlock.addEventListener("click", () => {
+        if(adminPass.value === ADMIN_PASSWORD){
+          adminArea.style.display = "grid";
+          toast("admin ok");
+        }else{
+          toast("nop");
+        }
+      });
+
+      banBtn.addEventListener("click", async () => { await ban(banPseudo.value); toast("banni"); });
+      unbanBtn.addEventListener("click", async () => { await unban(banPseudo.value); toast("unban"); });
+
+      messagesEl.addEventListener("click", async (e) => {
+        const bubble = e.target.closest(".bubble");
+        const row = e.target.closest(".row");
+        if(!row) return;
+
+        const id = row.getAttribute("data-id");
+        if(!id) return;
+
+        const myPseudo = getPseudo();
+
+        const openBtn = e.target.closest("[data-open]");
+        if(openBtn){
+          const picker = bubble?.querySelector(".picker");
+          if(!picker) return;
+          const willOpen = !picker.classList.contains("show");
+          closeAllPickers(bubble);
+          picker.classList.toggle("show", willOpen);
+          return;
+        }
+
+        const delBtnEl = e.target.closest("[data-del]");
+        if(delBtnEl){
+          const author = row.getAttribute("data-pseudo") || "";
+          if(String(author).toLowerCase() !== String(myPseudo).toLowerCase()){
+            toast("pas ton message");
+            return;
+          }
+          if(confirm("supprimer ton message ?")){
+            await deleteMyMessage(id);
+            toast("supprimé");
+          }
+          return;
+        }
+
+        const emBtn = e.target.closest("[data-emoji]");
+        if(emBtn){
+          const emoji = emBtn.getAttribute("data-emoji");
+          if(!emoji) return;
+
+          const dataSnap = row._dataCache || null;
+          const reacts = dataSnap?.reactions || {};
+          const list = reacts?.[emoji] || [];
+          const has = list.map(x => String(x).toLowerCase()).includes(String(myPseudo).toLowerCase());
+
+          await toggleReaction(id, emoji, has);
+
+          const picker = bubble?.querySelector(".picker");
+          if(picker) picker.classList.remove("show");
+          return;
+        }
+
+        const chip = e.target.closest("[data-chip]");
+        if(chip){
+          const emoji = chip.getAttribute("data-chip");
+          if(!emoji) return;
+
+          const dataSnap = row._dataCache || null;
+          const reacts = dataSnap?.reactions || {};
+          const list = reacts?.[emoji] || [];
+          const has = list.map(x => String(x).toLowerCase()).includes(String(myPseudo).toLowerCase());
+
+          await toggleReaction(id, emoji, has);
+          return;
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        const isInsideBubble = e.target.closest(".bubble");
+        const isOpenBtn = e.target.closest("[data-open]");
+        const isEmoji = e.target.closest("[data-emoji]");
+        if(!isInsideBubble && !isOpenBtn && !isEmoji){
+          closeAllPickers(null);
+        }
+      });
+
+      const q = query(collection(db,"messages"), orderBy("timestamp","asc"));
+      onSnapshot(q, (snap) => {
+        const stick = nearBottom(messagesEl);
+        let html = "";
+        let lastDay = "";
+        const cache = new Map();
+
+        snap.forEach((d) => {
+          const data = d.data();
+          cache.set(d.id, data);
+
+          const day = fmtDay(data.timestamp);
+          if(day && day !== lastDay){
+            html += `<div class="day"><span>${day}</span></div>`;
+            lastDay = day;
+          }
+          html += renderMessage(data, d.id);
+        });
+
+        messagesEl.innerHTML = html;
+
+        Array.from(messagesEl.querySelectorAll(".row")).forEach((rowEl) => {
+          const id = rowEl.getAttribute("data-id");
+          if(id && cache.has(id)) rowEl._dataCache = cache.get(id);
+        });
+
+        if(stick) messagesEl.scrollTop = messagesEl.scrollHeight;
+      });
+
+      autoresize();
+    });
+  </script>
+</body>
+</html>
