@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>billsproduction</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="app">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logoDot"></div>
+          <div class="brandTxt">
+            <div class="brandName">billsproduction</div>
+            <div class="brandSub">type beats • samples • remix and others absolutes bangers</div>
+          </div>
+        </div>
+
+        <div class="tabs" id="tabs">
+          <button class="tabBtn active" data-tab="home">home</button>
+          <button class="tabBtn" data-tab="discover">decouvrir</button>
+          <button class="tabBtn" data-tab="chat">chat</button>
+        </div>
+      </div>
+
+      <div class="main">
+        <!-- HOME -->
+        <div class="page show" id="page_home">
+          <div class="homeCard">
+            <div class="hero">
+              <div class="heroOverlay"></div>
+              <div class="heroInner">
+                <div class="heroTitle">peakkk website</div>
+                <div class="heroSub">open your mind twin</div>
+                <div class="heroBadges">
+                  <div class="badge">beats</div>
+                  <div class="badge">samples</div>
+                  <div class="badge">remix</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:10px"></div>
+          <div style="color:rgba(234,240,255,.65);font-size:12px">
+            image home: modifie --home-bg dans index.css
+          </div>
+        </div>
+
+        <!-- DECOUVRIR (ONLY UPLOADS + ADMIN) -->
+        <div class="page" id="page_discover">
+          <div class="discoverHead">
+            <div class="discoverTitle">uploads</div>
+            <div class="discoverSub">upload, écoute, delete, ban (admin)</div>
+          </div>
+
+          <div class="discoverActions">
+            <button class="uploadBtn" id="openUpload" type="button">upload</button>
+            <div class="uploadHint">ajoute un beat / sample / remix</div>
+          </div>
+
+          <div class="homeCard" style="padding:12px;border-radius:18px;margin-bottom:12px">
+            <div style="font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <span>liste</span>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+                <button class="uploadBtn" id="purgeBtn" type="button" style="height:30px;padding:0 10px;font-size:12px;display:none">purge</button>
+                <button class="uploadBtn" id="adminBtn" type="button" style="height:30px;padding:0 10px;font-size:12px">admin: off</button>
+                <button class="uploadBtn" id="setUserBtn" type="button" style="height:30px;padding:0 10px;font-size:12px">user</button>
+              </div>
+            </div>
+
+            <div id="uploadList" style="margin-top:8px"></div>
+
+            <div id="modLogWrap" style="margin-top:12px;display:none">
+              <div style="font-size:12px;color:rgba(234,240,255,.65);line-height:1.4">
+                log modération (admin)
+              </div>
+              <div id="modLog" style="margin-top:10px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHAT -->
+        <div class="page chatPage" id="page_chat">
+          <div class="chatFrame">
+            <iframe id="chatIframe" src="chat.html" title="chat"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL UPLOAD -->
+  <div class="modal" id="uploadModal">
+    <div class="modalBackdrop" id="closeUpload"></div>
+    <div class="modalCard">
+      <div class="modalTitle">upload</div>
+
+      <input class="modalInput" id="upTitle" placeholder="titre du son" />
+      <select class="modalInput" id="upType">
+        <option value="beat">beat</option>
+        <option value="sample">sample</option>
+        <option value="music">music</option>
+        <option value="remix">remix</option>
+      </select>
+
+      <input class="modalInput" id="upCover" type="file" accept="image/*" />
+      <div style="font-size:12px;color:rgba(234,240,255,.6);margin:-4px 0 8px">
+        cover optionnelle (si vide => cover par défaut)
+      </div>
+
+      <input class="modalInput" id="upAudio" type="file" accept="audio/*" />
+      <button class="uploadBtn" id="saveUpload" type="button">save</button>
+    </div>
+  </div>
+
+  <!-- BAN OVERLAY -->
+  <div class="banOverlay" id="banOverlay">
+    <div class="banPaper">
+      <div class="banTitle">compte suspendu</div>
+      <div class="banMeta" id="banMeta"></div>
+      <div class="banMsg" id="banMsg"></div>
+      <div class="banHint">si tu penses que c’est une erreur, contacte l’admin.</div>
+      <div class="banBtns">
+        <button class="banBtn" id="banRelogBtn" type="button">changer de pseudo</button>
+        <button class="banBtn" id="banCloseBtn" type="button">ok</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL PLAYER (sticky) -->
+  <div class="gp" id="gp" aria-hidden="true">
+    <div class="gpInner">
+      <div class="gpCover" id="gpCover"></div>
+
+      <div class="gpMid">
+        <div class="gpTop">
+          <div class="gpTitle" id="gpTitle">—</div>
+          <div class="gpMeta" id="gpMeta">—</div>
+        </div>
+
+        <input class="gpSeek" id="gpSeek" type="range" min="0" max="100" value="0" step="0.1" />
+        <div class="gpTime">
+          <span id="gpCur">0:00</span>
+          <span id="gpDur">0:00</span>
+        </div>
+      </div>
+
+      <div class="gpBtns">
+        <button class="gpBtn" id="gpPrev" type="button" title="prev">⏮</button>
+        <button class="gpBtn gpMain" id="gpPlay" type="button" title="play/pause">▶</button>
+        <button class="gpBtn" id="gpNext" type="button" title="next">⏭</button>
+        <button class="gpBtn" id="gpClose" type="button" title="close">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // tabs
+    const tabs = document.getElementById("tabs");
+    const pages = {
+      home: document.getElementById("page_home"),
+      discover: document.getElementById("page_discover"),
+      chat: document.getElementById("page_chat"),
+    };
+
+    function showTab(name){
+      Object.values(pages).forEach(p => p.classList.remove("show"));
+      pages[name]?.classList.add("show");
+      tabs.querySelectorAll(".tabBtn").forEach(b => b.classList.remove("active"));
+      const btn = tabs.querySelector(`[data-tab="${name}"]`);
+      if(btn) btn.classList.add("active");
+    }
+
+    tabs.addEventListener("click", (e) => {
+      const btn = e.target.closest(".tabBtn");
+      if(!btn) return;
+      const name = btn.getAttribute("data-tab");
+      if(!name) return;
+      showTab(name);
+    });
+
+    // refs
+    const uploadModal = document.getElementById("uploadModal");
+    const openUpload = document.getElementById("openUpload");
+    const closeUpload = document.getElementById("closeUpload");
+    const saveUpload = document.getElementById("saveUpload");
+    const uploadList = document.getElementById("uploadList");
+    const setUserBtn = document.getElementById("setUserBtn");
+    const adminBtn = document.getElementById("adminBtn");
+    const purgeBtn = document.getElementById("purgeBtn");
+    const modLogWrap = document.getElementById("modLogWrap");
+    const modLog = document.getElementById("modLog");
+
+    // global player refs
+    const gp = document.getElementById("gp");
+    const gpCover = document.getElementById("gpCover");
+    const gpTitle = document.getElementById("gpTitle");
+    const gpMeta = document.getElementById("gpMeta");
+    const gpSeek = document.getElementById("gpSeek");
+    const gpCur = document.getElementById("gpCur");
+    const gpDur = document.getElementById("gpDur");
+    const gpPrev = document.getElementById("gpPrev");
+    const gpPlay = document.getElementById("gpPlay");
+    const gpNext = document.getElementById("gpNext");
+    const gpClose = document.getElementById("gpClose");
+
+    const DEFAULT_COVER_SVG =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop stop-color="#7c5cff" offset="0"/>
+              <stop stop-color="#00d4ff" offset="1"/>
+            </linearGradient>
+          </defs>
+          <rect rx="18" ry="18" width="96" height="96" fill="rgba(0,0,0,0.25)"/>
+          <circle cx="48" cy="48" r="28" fill="url(#g)" opacity="0.9"/>
+          <circle cx="48" cy="48" r="10" fill="rgba(0,0,0,0.25)"/>
+          <text x="48" y="86" text-anchor="middle" font-family="Arial" font-size="10" fill="rgba(234,240,255,0.85)">billsproduction</text>
+        </svg>
+      `);
+
+    function escapeHtml(s){
+      return (s || "").replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+      }[m]));
+    }
+
+    function fileToDataUrl(file){
+      return new Promise((resolve,reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
+
+    // user id
+    function getUserId(){
+      let id = localStorage.getItem("bp_userId");
+      if(!id){
+        id = "user_" + Math.random().toString(16).slice(2,10);
+        localStorage.setItem("bp_userId", id);
+      }
+      return id;
+    }
+    let currentUserId = getUserId();
+
+    // admin
+    function getIsAdmin(){ return localStorage.getItem("bp_isAdmin") === "1"; }
+    function setIsAdmin(v){ localStorage.setItem("bp_isAdmin", v ? "1" : "0"); }
+    let isAdmin = getIsAdmin();
+
+    function refreshTopButtons(){
+      if(setUserBtn) setUserBtn.textContent = currentUserId.replace("user_","u:");
+      if(adminBtn) adminBtn.textContent = isAdmin ? "admin: on" : "admin: off";
+    }
+
+    function refreshAdminOnlyUi(){
+      if(purgeBtn) purgeBtn.style.display = isAdmin ? "inline-flex" : "none";
+      if(modLogWrap) modLogWrap.style.display = isAdmin ? "block" : "none";
+    }
+
+    refreshTopButtons();
+    refreshAdminOnlyUi();
+
+    // data
+    let uploads = [];
+    try { uploads = JSON.parse(localStorage.getItem("bp_uploads") || "[]"); }
+    catch(e){ uploads = []; }
+
+    let modLogs = [];
+    try { modLogs = JSON.parse(localStorage.getItem("bp_modlog") || "[]"); }
+    catch(e){ modLogs = []; }
+
+    function saveUploads(){
+      try { localStorage.setItem("bp_uploads", JSON.stringify(uploads)); }
+      catch(e){ alert("storage plein: ok en session mais pas sûr après refresh."); }
+    }
+
+    function saveModLog(){
+      try { localStorage.setItem("bp_modlog", JSON.stringify(modLogs)); }
+      catch(e){}
+    }
+
+    function renderModLog(){
+      if(!modLog) return;
+      if(!modLogs.length){
+        modLog.innerHTML = `<div style="font-size:12px;color:rgba(234,240,255,.6)">aucun log</div>`;
+        return;
+      }
+      modLog.innerHTML = modLogs.slice(0,15).map(x => `
+        <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px;background:rgba(0,0,0,.14);margin-top:8px">
+          <div style="font-size:12px">${escapeHtml(x.action)}</div>
+          <div style="margin-top:4px;font-size:12px;color:rgba(234,240,255,.7);line-height:1.35">
+            user: ${escapeHtml((x.songUserId||"").replace("user_",""))}
+          </div>
+          <div style="margin-top:4px;font-size:12px;color:rgba(234,240,255,.7);line-height:1.35">
+            comment: ${escapeHtml(x.comment || "—")}
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:rgba(234,240,255,.55)">
+            ${new Date(x.ts).toLocaleString()} • admin: ${escapeHtml((x.adminId||"").replace("user_",""))}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // audio + global player state
+    const audio = new Audio();
+    audio.preload = "metadata";
+    let nowPlayingId = null;
+
+    let isSeeking = false;
+
+    // session-only audio URLs
+    const sessionAudioUrls = new Map();
+    window.addEventListener("beforeunload", () => {
+      try{ sessionAudioUrls.forEach(url => URL.revokeObjectURL(url)); }catch(e){}
+    });
+
+    function fmtTime(sec){
+      if(!isFinite(sec) || sec < 0) sec = 0;
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${String(s).padStart(2,"0")}`;
+    }
+
+    function showGlobalPlayer(){
+      if(!gp) return;
+      gp.classList.add("show");
+      gp.setAttribute("aria-hidden","false");
+    }
+
+    function hideGlobalPlayer(){
+      if(!gp) return;
+      gp.classList.remove("show");
+      gp.setAttribute("aria-hidden","true");
+    }
+
+    function setNowPlayingUI(u){
+      if(!u) return;
+      const cover = u.cover || DEFAULT_COVER_SVG;
+      if(gpCover) gpCover.style.backgroundImage = `url('${cover}')`;
+      if(gpTitle) gpTitle.textContent = u.title || "—";
+      if(gpMeta) gpMeta.textContent = `${u.type || "—"} • ${(u.userId||"").replace("user_","")}`;
+    }
+
+    function syncPlayBtn(){
+      if(!gpPlay) return;
+      gpPlay.textContent = audio.paused ? "▶" : "⏸";
+    }
+
+    function getIndexById(id){
+      return uploads.findIndex(x => x.id === id);
+    }
+
+    function getNextPlayableIndex(fromIndex, dir){
+      if(!uploads.length) return -1;
+      let i = fromIndex;
+      for(let step = 0; step < uploads.length; step++){
+        i = (i + dir + uploads.length) % uploads.length;
+        const u = uploads[i];
+        if(u && sessionAudioUrls.has(u.id)) return i;
+      }
+      return -1;
+    }
+
+    function playById(id){
+      const u = uploads.find(x => x.id === id);
+      if(!u) return;
+
+      const url = sessionAudioUrls.get(id);
+      if(!url){
+        alert("ce son n'est pas dispo en session (re-upload pour écouter).");
+        return;
+      }
+
+      nowPlayingId = id;
+      audio.src = url;
+
+      setNowPlayingUI(u);
+      showGlobalPlayer();
+
+      audio.play().catch(err => alert("lecture bloquée: " + (err?.message || "unknown")));
+      syncPlayBtn();
+      renderUploads();
+    }
+
+    function togglePlay(id){
+      const url = sessionAudioUrls.get(id);
+      if(!url){
+        alert("pour l’instant, l’écoute marche après un upload dans la session. re-upload ton fichier pour l’écouter.");
+        return;
+      }
+
+      if(nowPlayingId !== id){
+        playById(id);
+        return;
+      }
+
+      if(audio.paused) audio.play().catch(()=>{});
+      else audio.pause();
+
+      syncPlayBtn();
+      renderUploads();
+    }
+
+    if(gpPlay){
+      gpPlay.addEventListener("click", () => {
+        if(!nowPlayingId) return;
+        if(audio.paused) audio.play().catch(()=>{});
+        else audio.pause();
+        syncPlayBtn();
+        renderUploads();
+      });
+    }
+
+    if(gpPrev){
+      gpPrev.addEventListener("click", () => {
+        if(!nowPlayingId) return;
+        const curIdx = getIndexById(nowPlayingId);
+        const prevIdx = getNextPlayableIndex(curIdx, -1);
+        if(prevIdx === -1) return;
+        playById(uploads[prevIdx].id);
+      });
+    }
+
+    if(gpNext){
+      gpNext.addEventListener("click", () => {
+        if(!nowPlayingId) return;
+        const curIdx = getIndexById(nowPlayingId);
+        const nextIdx = getNextPlayableIndex(curIdx, +1);
+        if(nextIdx === -1) return;
+        playById(uploads[nextIdx].id);
+      });
+    }
+
+    if(gpClose){
+      gpClose.addEventListener("click", () => {
+        try{ audio.pause(); }catch(e){}
+        audio.src = "";
+        nowPlayingId = null;
+        hideGlobalPlayer();
+        syncPlayBtn();
+        renderUploads();
+      });
+    }
+
+    if(gpSeek){
+      gpSeek.addEventListener("input", () => {
+        if(!isFinite(audio.duration) || audio.duration <= 0) return;
+        isSeeking = true;
+        const pct = Number(gpSeek.value) / 100;
+        const t = pct * audio.duration;
+        if(gpCur) gpCur.textContent = fmtTime(t);
+      });
+
+      gpSeek.addEventListener("change", () => {
+        if(!isFinite(audio.duration) || audio.duration <= 0) return;
+        const pct = Number(gpSeek.value) / 100;
+        audio.currentTime = pct * audio.duration;
+        isSeeking = false;
+      });
+    }
+
+    audio.addEventListener("loadedmetadata", () => {
+      if(gpDur) gpDur.textContent = fmtTime(audio.duration);
+      if(gpCur) gpCur.textContent = fmtTime(audio.currentTime);
+      if(gpSeek) gpSeek.value = "0";
+      syncPlayBtn();
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      if(!isFinite(audio.duration) || audio.duration <= 0) return;
+      if(!isSeeking && gpSeek){
+        gpSeek.value = String((audio.currentTime / audio.duration) * 100);
+      }
+      if(!isSeeking && gpCur) gpCur.textContent = fmtTime(audio.currentTime);
+    });
+
+    audio.addEventListener("play", syncPlayBtn);
+    audio.addEventListener("pause", syncPlayBtn);
+
+    audio.addEventListener("ended", () => {
+      if(!nowPlayingId) return;
+      const curIdx = getIndexById(nowPlayingId);
+      const nextIdx = getNextPlayableIndex(curIdx, +1);
+      if(nextIdx === -1){
+        nowPlayingId = null;
+        hideGlobalPlayer();
+        renderUploads();
+        return;
+      }
+      playById(uploads[nextIdx].id);
+    });
+
+    // bans
+    let bans = [];
+    try { bans = JSON.parse(localStorage.getItem("bp_bans") || "[]"); }
+    catch(e){ bans = []; }
+
+    function saveBans(){
+      try { localStorage.setItem("bp_bans", JSON.stringify(bans)); }
+      catch(e){}
+    }
+
+    function getBanForUser(userId){
+      return bans.find(b => b.userId === userId) || null;
+    }
+
+    const banOverlay = document.getElementById("banOverlay");
+    const banMeta = document.getElementById("banMeta");
+    const banMsg = document.getElementById("banMsg");
+    const banRelogBtn = document.getElementById("banRelogBtn");
+    const banCloseBtn = document.getElementById("banCloseBtn");
+
+    function showBanOverlay(ban){
+      if(!banOverlay) return;
+
+      const adminTxt = (ban.adminId || "").replace("user_","");
+      const dt = ban.ts ? new Date(ban.ts).toLocaleString() : "";
+      if(banMeta) banMeta.textContent = `admin: ${adminTxt || "—"} • ${dt || ""}`;
+      if(banMsg) banMsg.textContent = (ban.comment && ban.comment.trim()) ? ban.comment.trim() : "tu as été suspendu.";
+
+      banOverlay.classList.add("show");
+
+      if(openUpload) openUpload.disabled = true;
+      if(saveUpload) saveUpload.disabled = true;
+
+      if(tabs){
+        tabs.style.pointerEvents = "none";
+        tabs.style.opacity = "0.55";
+      }
+    }
+
+    function hideBanOverlay(){
+      if(!banOverlay) return;
+      banOverlay.classList.remove("show");
+    }
+
+    function checkBanAndApply(){
+      const ban = getBanForUser(currentUserId);
+      if(ban){
+        showBanOverlay(ban);
+        return true;
+      }
+
+      if(openUpload) openUpload.disabled = false;
+      if(saveUpload) saveUpload.disabled = false;
+
+      if(tabs){
+        tabs.style.pointerEvents = "";
+        tabs.style.opacity = "";
+      }
+
+      hideBanOverlay();
+      return false;
+    }
+
+    function banUser(targetUserId, comment){
+      const entry = {
+        userId: targetUserId,
+        adminId: currentUserId,
+        comment: (comment || "").trim().slice(0,240),
+        ts: Date.now()
+      };
+
+      const exists = getBanForUser(targetUserId);
+      if(exists) bans = bans.map(b => b.userId === targetUserId ? entry : b);
+      else bans.unshift(entry);
+      saveBans();
+
+      modLogs.unshift({
+        action: "admin banned user",
+        songUserId: targetUserId,
+        adminId: currentUserId,
+        comment: entry.comment || "—",
+        ts: entry.ts
+      });
+      saveModLog();
+      renderModLog();
+
+      checkBanAndApply();
+    }
+
+    if(banRelogBtn){
+      banRelogBtn.addEventListener("click", () => {
+        const v = prompt("ton pseudo (simple) ?", currentUserId.replace("user_",""));
+        if(v === null) return;
+        const cleaned = (v || "").trim().slice(0,24).replace(/\s+/g,"_");
+        if(!cleaned) return alert("pseudo invalide");
+        currentUserId = "user_" + cleaned;
+        localStorage.setItem("bp_userId", currentUserId);
+        refreshTopButtons();
+        renderUploads();
+        checkBanAndApply();
+      });
+    }
+
+    if(banCloseBtn){
+      banCloseBtn.addEventListener("click", () => {
+        checkBanAndApply();
+      });
+    }
+
+    // purge
+    function purgeAllLocalUploads(){
+      if(!isAdmin) return alert("admin only");
+      if(!confirm("supprimer TOUS les uploads locaux (localStorage) ?")) return;
+
+      try{
+        audio.pause();
+        audio.src = "";
+        nowPlayingId = null;
+        hideGlobalPlayer();
+      }catch(e){}
+
+      try{
+        sessionAudioUrls.forEach(url => { try{ URL.revokeObjectURL(url); }catch(e){} });
+        sessionAudioUrls.clear();
+      }catch(e){}
+
+      uploads = [];
+      saveUploads();
+      renderUploads();
+
+      modLogs.unshift({
+        action: "admin purged all local uploads",
+        songUserId: "",
+        adminId: currentUserId,
+        comment: "purge all",
+        ts: Date.now()
+      });
+      saveModLog();
+      renderModLog();
+
+      alert("ok: tous les uploads locaux ont été supprimés.");
+    }
+
+    if(purgeBtn){
+      purgeBtn.addEventListener("click", () => purgeAllLocalUploads());
+    }
+
+    // user change
+    if(setUserBtn){
+      setUserBtn.addEventListener("click", () => {
+        const v = prompt("ton pseudo (simple) ?", currentUserId.replace("user_",""));
+        if(v === null) return;
+        const cleaned = (v || "").trim().slice(0,24).replace(/\s+/g,"_");
+        if(!cleaned) return alert("pseudo invalide");
+        currentUserId = "user_" + cleaned;
+        localStorage.setItem("bp_userId", currentUserId);
+        refreshTopButtons();
+        renderUploads();
+        checkBanAndApply();
+      });
+    }
+
+    // admin toggle
+    if(adminBtn){
+      adminBtn.addEventListener("click", () => {
+        if(!isAdmin){
+          const pin = prompt("admin pin ?");
+          if(pin !== "250608") return alert("wrong pin");
+          isAdmin = true;
+          setIsAdmin(true);
+        } else {
+          isAdmin = false;
+          setIsAdmin(false);
+        }
+        refreshTopButtons();
+        refreshAdminOnlyUi();
+        renderUploads();
+      });
+    }
+
+    function renderUploads(){
+      if(!uploadList) return;
+
+      if(!uploads.length){
+        uploadList.innerHTML = `<div style="font-size:12px;color:rgba(234,240,255,.6)">aucun upload pour l’instant</div>`;
+        return;
+      }
+
+      uploadList.innerHTML = uploads.map(u => {
+        const cover = u.cover || DEFAULT_COVER_SVG;
+        const isPlaying = nowPlayingId === u.id && !audio.paused;
+        const canPlay = sessionAudioUrls.has(u.id);
+        const isMine = u.userId === currentUserId;
+
+        const canDelete = isMine || isAdmin;
+
+        return `
+          <div class="uploadRow" style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+            <div style="display:flex;gap:10px;align-items:center;min-width:0">
+              <div style="width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background-image:url('${cover}');background-size:cover;background-position:center;flex:0 0 auto"></div>
+              <div style="min-width:0">
+                <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(u.title)}</div>
+                <div style="font-size:12px;color:rgba(234,240,255,.65);margin-top:3px">
+                  ${escapeHtml(u.type)} • ${new Date(u.date).toLocaleString()} • ${escapeHtml((u.userId||"").replace("user_",""))}
+                  ${canPlay ? "" : " • re-upload pour écouter"}
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end">
+              <button class="uploadBtn" type="button" data-play="${u.id}"
+                ${canPlay ? "" : "disabled"}
+                style="${canPlay ? "height:30px;padding:0 10px;font-size:12px" : "height:30px;padding:0 10px;font-size:12px;opacity:.5;cursor:not-allowed"}">
+                ${isPlaying ? "pause" : "play"}
+              </button>
+
+              ${canDelete ? `
+                <button class="uploadBtn" type="button" data-del="${u.id}"
+                  style="height:30px;padding:0 10px;font-size:12px;border-color:rgba(255,77,109,.25);background:rgba(255,77,109,.08)">
+                  delete
+                </button>
+              ` : ``}
+
+              ${(isAdmin && !isMine) ? `
+                <button class="uploadBtn" type="button" data-ban="${u.userId}"
+                  style="height:30px;padding:0 10px;font-size:12px;border-color:rgba(255,180,0,.25);background:rgba(255,180,0,.10)">
+                  ban
+                </button>
+              ` : ``}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      uploadList.querySelectorAll("[data-play]").forEach(btn => {
+        btn.addEventListener("click", () => togglePlay(btn.getAttribute("data-play")));
+      });
+
+      uploadList.querySelectorAll("[data-del]").forEach(btn => {
+        btn.addEventListener("click", () => deleteUpload(btn.getAttribute("data-del")));
+      });
+
+      uploadList.querySelectorAll("[data-ban]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const targetUserId = btn.getAttribute("data-ban");
+          if(!targetUserId) return;
+          const msg = prompt("commentaire ban (ce que le mec verra) ?");
+          if(msg === null) return;
+          const cleaned = (msg || "").trim();
+          if(!cleaned) return alert("mets un commentaire (obligatoire).");
+          if(!confirm("ban ce user ?")) return;
+          banUser(targetUserId, cleaned);
+        });
+      });
+    }
+
+    function deleteUpload(id){
+      const u = uploads.find(x => x.id === id);
+      if(!u) return;
+
+      const isMine = u.userId === currentUserId;
+      if(!isMine && !isAdmin){
+        alert("tu peux supprimer uniquement tes uploads.");
+        return;
+      }
+
+      let comment = "";
+      if(isAdmin && !isMine){
+        comment = prompt("commentaire pour le mec (raison du delete) ?");
+        if(comment === null) return;
+        comment = (comment || "").trim().slice(0,180);
+        if(!comment) return alert("mets un commentaire (obligatoire en admin).");
+      }
+
+      if(!confirm("supprimer ce son ?")) return;
+
+      if(nowPlayingId === id){
+        try{ audio.pause(); }catch(e){}
+        audio.src = "";
+        nowPlayingId = null;
+        hideGlobalPlayer();
+        syncPlayBtn();
+      }
+
+      const url = sessionAudioUrls.get(id);
+      if(url){
+        try{ URL.revokeObjectURL(url); }catch(e){}
+        sessionAudioUrls.delete(id);
+      }
+
+      if(isAdmin && !isMine){
+        modLogs.unshift({
+          action: "admin deleted song",
+          songUserId: u.userId || "",
+          adminId: currentUserId,
+          comment,
+          ts: Date.now()
+        });
+        saveModLog();
+        renderModLog();
+      }
+
+      uploads = uploads.filter(x => x.id !== id);
+      saveUploads();
+      renderUploads();
+    }
+
+    function openModal(){ uploadModal.classList.add("show"); }
+    function closeModalFn(){
+      uploadModal.classList.remove("show");
+      document.getElementById("upTitle").value = "";
+      document.getElementById("upType").value = "beat";
+      document.getElementById("upCover").value = "";
+      document.getElementById("upAudio").value = "";
+    }
+
+    if(openUpload) openUpload.addEventListener("click", openModal);
+    if(closeUpload) closeUpload.addEventListener("click", closeModalFn);
+
+    if(saveUpload){
+      saveUpload.addEventListener("click", async () => {
+        if(checkBanAndApply()) return;
+
+        const title = document.getElementById("upTitle").value.trim();
+        const type = document.getElementById("upType").value;
+        const coverFile = document.getElementById("upCover").files[0];
+        const audioFile = document.getElementById("upAudio").files[0];
+
+        if(!title) return alert("mets un titre");
+        if(!audioFile) return alert("choisis un fichier audio");
+        if(audioFile.type && !audioFile.type.startsWith("audio/")){
+          return alert("fichier audio invalide");
+        }
+
+        let coverData = "";
+        if(coverFile){
+          try { coverData = await fileToDataUrl(coverFile); }
+          catch(e){ coverData = ""; }
+        }
+
+        const id = "u_" + Math.random().toString(16).slice(2);
+        const objectUrl = URL.createObjectURL(audioFile);
+        sessionAudioUrls.set(id, objectUrl);
+
+        uploads.unshift({
+          id,
+          userId: currentUserId,
+          title,
+          type,
+          cover: coverData,
+          date: Date.now()
+        });
+
+        saveUploads();
+        closeModalFn();
+        renderUploads();
+        playById(id);
+      });
+    }
+
+    // init
+    renderUploads();
+    renderModLog();
+    showTab("home");
+    checkBanAndApply();
+  </script>
+</body>
+</html>
