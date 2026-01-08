@@ -1,0 +1,443 @@
+:root {
+    --bg0: #0b0d12;
+    --bg1: #0e111a;
+    --text: #e9ecf5;
+    --muted: rgba(233, 236, 245, .64);
+    --divider: rgba(255, 255, 255, .08);
+    --accent: #7c5cff;
+    --danger: #ff4d6d;
+    --r: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+body {
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    color: var(--text);
+    background: linear-gradient(180deg, var(--bg0), var(--bg1));
+}
+
+.wrap {
+    height: 100%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    overflow: hidden;
+}
+
+.app {
+    width: min(1100px, 100%);
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: transparent;
+}
+
+.topbar {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 16px;
+    background: rgba(11, 13, 18, .55);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--divider);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.logoDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, .18);
+}
+
+.brandTxt {
+    min-width: 0;
+}
+
+.brandName {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.brandSub {
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rightBtns {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.btn {
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(124, 92, 255, .45);
+    background: rgba(124, 92, 255, .16);
+    color: var(--text);
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.btn:hover {
+    background: rgba(124, 92, 255, .22);
+}
+
+.btnSmall {
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid var(--divider);
+    background: rgba(255, 255, 255, .03);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 12px;
+    transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.btnSmall:hover {
+    background: rgba(255, 255, 255, .05);
+}
+
+.btnSmall.active {
+    border-color: rgba(124, 92, 255, .55);
+    background: rgba(124, 92, 255, .18);
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, .12);
+}
+
+#setNameBtn {
+    border-color: rgba(255, 255, 255, .12) !important;
+    background: rgba(255, 255, 255, .03) !important;
+    box-shadow: none !important;
+}
+
+#setNameBtn:hover,
+#setNameBtn:focus {
+    border-color: rgba(124, 92, 255, .55) !important;
+    background: rgba(124, 92, 255, .16) !important;
+    box-shadow: 0 0 0 3px rgba(124, 92, 255, .10) !important;
+    outline: none;
+}
+
+/* main scroll */
+.main {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    overflow-x: hidden;
+    padding: 16px;
+    padding-bottom: 98px;
+    /* place pour playerBar */
+}
+
+.card {
+    background: rgba(255, 255, 255, .035);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: var(--r);
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.hTitle {
+    font-size: 15px;
+}
+
+.hSub {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.35;
+}
+
+.row {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.input {
+    flex: 1;
+    min-width: 220px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--divider);
+    background: rgba(0, 0, 0, .20);
+    color: var(--text);
+    padding: 0 12px;
+    outline: none;
+}
+
+.input:focus {
+    border-color: rgba(124, 92, 255, .55);
+}
+
+.hint,
+.empty {
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(233, 236, 245, .55);
+}
+
+/* list head */
+.listHead {
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    color: rgba(233, 236, 245, .55);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    padding: 8px 0;
+}
+
+/* spotify-like row */
+.songRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.songRow:last-child {
+    border-bottom: 0;
+}
+
+.playBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    background: rgba(255, 255, 255, .03);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.playBtn:hover {
+    background: rgba(255, 255, 255, .06);
+}
+
+.cover {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(255, 255, 255, .03);
+    flex: 0 0 auto;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.coverPh {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(60px 40px at 30% 20%, rgba(124, 92, 255, .30), transparent 60%),
+        radial-gradient(60px 40px at 80% 80%, rgba(0, 212, 255, .18), transparent 60%),
+        rgba(255, 255, 255, .03);
+}
+
+.songMain {
+    min-width: 0;
+    flex: 1;
+}
+
+.songTitle {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.songMeta {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.songActions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.chip {
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    background: rgba(255, 255, 255, .03);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.chip:hover {
+    background: rgba(255, 255, 255, .06);
+}
+
+.chipOn {
+    border-color: rgba(124, 92, 255, .55);
+    background: rgba(124, 92, 255, .18);
+}
+
+.chipDanger {
+    border-color: rgba(255, 77, 109, .35);
+    background: rgba(255, 77, 109, .10);
+}
+
+/* player sticky */
+.playerBar {
+    height: 86px;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    background: rgba(11, 13, 18, .72);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+}
+
+.pPlay {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    border: 1px solid rgba(124, 92, 255, .45);
+    background: rgba(124, 92, 255, .16);
+    color: var(--text);
+    cursor: pointer;
+}
+
+.pPlay:hover {
+    background: rgba(124, 92, 255, .22);
+}
+
+.pMeta {
+    flex: 1;
+    min-width: 0;
+}
+
+.pTitle {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pSub {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pSeek {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pTime {
+    width: 44px;
+    font-size: 11px;
+    color: rgba(233, 236, 245, .55);
+    text-align: center;
+}
+
+.pRange {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width:520px) {
+    .topbar {
+        height: auto;
+        padding: 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .brand {
+        width: 100%;
+    }
+
+    .rightBtns {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+    }
+
+    .rightBtns .btnSmall,
+    .rightBtns .btn {
+        width: 100%;
+        height: 36px;
+        padding: 0;
+        border-radius: 12px;
+    }
+
+    .main {
+        padding: 12px;
+        padding-bottom: 108px;
+    }
+
+    .input {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .songActions {
+        gap: 6px;
+    }
+}

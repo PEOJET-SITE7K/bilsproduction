@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>discover • billsproduction</title>
+  <link rel="stylesheet" href="discover.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="app">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logoDot"></div>
+          <div class="brandTxt">
+            <div class="brandName">billsproduction</div>
+            <div class="brandSub" id="subTxt">uploads</div>
+          </div>
+        </div>
+
+        <div class="rightBtns">
+          <button class="btnSmall" id="tabMine" type="button">par vous</button>
+          <button class="btnSmall" id="tabPublic" type="button">public</button>
+          <button class="btn" id="setNameBtn" type="button">pseudo</button>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="card">
+          <div class="hTitle">upload un son</div>
+          <div class="hSub">pas de login</div>
+
+          <div class="row">
+            <input class="input" id="titleInput" placeholder="titre" />
+            <select class="input" id="typeInput" style="max-width:180px">
+              <option value="beat">beat</option>
+              <option value="sample">sample</option>
+              <option value="music">music</option>
+              <option value="remix">remix</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <input class="input" id="audioInput" type="file" accept="audio/*" />
+            <input class="input" id="coverInput" type="file" accept="image/*" />
+          </div>
+
+          <div class="row">
+            <button class="btn" id="uploadBtn" type="button">upload</button>
+            <div class="hint" style="margin:0">audio: mp3 wav ogg m4a flac • cover: jpg png webp</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="hTitle" id="listTitle">ma liste</div>
+          <div class="hSub" id="listSub">privé/public</div>
+
+          <div class="listHead">
+            <div class="lhLeft">titre</div>
+            <div class="lhRight">actions</div>
+          </div>
+
+          <div id="list"></div>
+        </div>
+      </div>
+
+      <div class="playerBar" id="playerBar">
+        <button class="pPlay" id="pPlay" type="button" aria-label="play/pause">▶</button>
+
+        <div class="pMeta">
+          <div class="pTitle" id="pTitle">aucun son</div>
+          <div class="pSub" id="pSub">—</div>
+
+          <div class="pSeek">
+            <span class="pTime" id="pTimeCur">0:00</span>
+            <input class="pRange" id="pRange" type="range" min="0" max="1000" value="0" />
+            <span class="pTime" id="pTimeDur">0:00</span>
+          </div>
+        </div>
+
+        <audio id="playerAudio" preload="metadata"></audio>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const API = "api.php";
+
+    const list = document.getElementById("list");
+    const subTxt = document.getElementById("subTxt");
+    const listTitle = document.getElementById("listTitle");
+    const listSub = document.getElementById("listSub");
+
+    const tabMine = document.getElementById("tabMine");
+    const tabPublic = document.getElementById("tabPublic");
+    const setNameBtn = document.getElementById("setNameBtn");
+
+    const titleInput = document.getElementById("titleInput");
+    const typeInput = document.getElementById("typeInput");
+    const audioInput = document.getElementById("audioInput");
+    const coverInput = document.getElementById("coverInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+
+    const playerAudio = document.getElementById("playerAudio");
+    const pPlay = document.getElementById("pPlay");
+    const pTitle = document.getElementById("pTitle");
+    const pSub = document.getElementById("pSub");
+    const pRange = document.getElementById("pRange");
+    const pTimeCur = document.getElementById("pTimeCur");
+    const pTimeDur = document.getElementById("pTimeDur");
+
+    let view = "mine"; // mine | public
+    let tracksCache = [];
+    let currentId = 0;
+    let seeking = false;
+
+    function esc(s){
+      return String(s||"").replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+      }[m]));
+    }
+
+    function fmtTime(sec){
+      sec = Math.max(0, Math.floor(sec||0));
+      const m = Math.floor(sec/60);
+      const s = sec%60;
+      return m + ":" + String(s).padStart(2,"0");
+    }
+
+    async function apiGet(action){
+      const res = await fetch(`${API}?action=${encodeURIComponent(action)}`, { credentials:"include" });
+      const data = await res.json().catch(()=>({ok:false,error:"bad_json"}));
+      if(!res.ok || !data.ok) throw new Error(data.error || ("http_"+res.status));
+      return data;
+    }
+
+    async function apiPostJson(action, body){
+      const res = await fetch(`${API}?action=${encodeURIComponent(action)}`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(body||{}),
+        credentials:"include"
+      });
+      const data = await res.json().catch(()=>({ok:false,error:"bad_json"}));
+      if(!res.ok || !data.ok) throw new Error(data.error || ("http_"+res.status));
+      return data;
+    }
+
+    async function apiPostForm(action, formData){
+      const res = await fetch(`${API}?action=${encodeURIComponent(action)}`, {
+        method:"POST",
+        body: formData,
+        credentials:"include"
+      });
+      const data = await res.json().catch(()=>({ok:false,error:"bad_json"}));
+      if(!res.ok || !data.ok) throw new Error(data.error || ("http_"+res.status));
+      return data;
+    }
+
+    function updateTabsUI(){
+      tabMine.classList.toggle("active", view === "mine");
+      tabPublic.classList.toggle("active", view === "public");
+    }
+
+    function setRowPlayingUI(){
+      list.querySelectorAll("[data-play]").forEach(btn => {
+        const id = Number(btn.getAttribute("data-play"));
+        btn.textContent = (id === currentId && !playerAudio.paused) ? "⏸" : "▶";
+      });
+      pPlay.textContent = (!playerAudio.paused && currentId) ? "⏸" : "▶";
+    }
+
+    function setPlayerMeta(t){
+      if(!t){
+        pTitle.textContent = "aucun son";
+        pSub.textContent = "—";
+        return;
+      }
+      pTitle.textContent = t.title || "untitled";
+      if(view === "public"){
+        pSub.textContent = `${t.type || "music"} • ${t.display_name || "unknown"}`;
+      }else{
+        pSub.textContent = `${t.type || "music"} • ${t.is_public ? "public" : "privé"}`;
+      }
+    }
+
+    function playTrackById(id){
+      const t = tracksCache.find(x => Number(x.id) === Number(id));
+      if(!t) return;
+
+      if(currentId === Number(id)){
+        if(playerAudio.paused) playerAudio.play();
+        else playerAudio.pause();
+        setRowPlayingUI();
+        return;
+      }
+
+      currentId = Number(id);
+      playerAudio.src = t.audio_url;
+      playerAudio.play().catch(()=>{});
+      setPlayerMeta(t);
+      setRowPlayingUI();
+    }
+
+    function renderList(tracks){
+      if(!tracks.length){
+        list.innerHTML = `<div class="empty">aucun son.</div>`;
+        return;
+      }
+
+      list.innerHTML = tracks.map(t => {
+        const cover = t.cover_url ? esc(t.cover_url) : "";
+        const isMine = (view === "mine");
+        const pubBtn = isMine ? `
+          <button class="chip ${t.is_public ? "chipOn" : ""}" data-pub="${esc(t.id)}" data-state="${t.is_public ? 1 : 0}" type="button">
+            ${t.is_public ? "public" : "privé"}
+          </button>
+        ` : "";
+        const delBtn = isMine ? `
+          <button class="chip chipDanger" data-del="${esc(t.id)}" type="button">delete</button>
+        ` : "";
+
+        const meta = (view === "public")
+          ? `${esc(t.type)} • ${esc(t.display_name || "unknown")} • ${new Date((t.created_at||0)*1000).toLocaleString()}`
+          : `${esc(t.type)} • ${new Date((t.created_at||0)*1000).toLocaleString()}`;
+
+        return `
+          <div class="songRow ${Number(t.id)===currentId ? "isCurrent":""}">
+            <button class="playBtn" data-play="${esc(t.id)}" type="button">▶</button>
+
+            <div class="cover">
+              ${cover ? `<img src="${cover}" alt="">` : `<div class="coverPh"></div>`}
+            </div>
+
+            <div class="songMain">
+              <div class="songTitle">${esc(t.title)}</div>
+              <div class="songMeta">${meta}</div>
+            </div>
+
+            <div class="songActions">
+              ${pubBtn}
+              ${delBtn}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      list.querySelectorAll("[data-play]").forEach(btn => {
+        btn.addEventListener("click", () => playTrackById(Number(btn.getAttribute("data-play"))));
+      });
+
+      list.querySelectorAll("[data-del]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.getAttribute("data-del"));
+          if(!id) return;
+          if(!confirm("supprimer ?")) return;
+          await apiPostJson("delete", {id});
+          if(currentId === id){
+            currentId = 0;
+            playerAudio.pause();
+            playerAudio.removeAttribute("src");
+            setPlayerMeta(null);
+          }
+          await refresh();
+        });
+      });
+
+      list.querySelectorAll("[data-pub]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const id = Number(btn.getAttribute("data-pub"));
+          const cur = Number(btn.getAttribute("data-state"));
+          const next = cur ? 0 : 1;
+          await apiPostJson("set_public", {id, is_public: next});
+          await refresh();
+        });
+      });
+
+      setRowPlayingUI();
+    }
+
+    async function refresh(){
+      updateTabsUI();
+
+      if(view === "mine"){
+        const d = await apiGet("tracks");
+        tracksCache = d.tracks || [];
+        subTxt.textContent = `uploads • ${d.display_name ? ("u: "+d.display_name) : "auto-session"} • privé`;
+        listTitle.textContent = "ma liste";
+        listSub.textContent = "liste compacte • play à droite • toggle public/privé";
+
+      } else {
+        const d = await apiGet("public_list");
+        tracksCache = d.tracks || [];
+        subTxt.textContent = "uploads • public";
+        listTitle.textContent = "public";
+        listSub.textContent = "sons publics de tout le monde";
+      }
+
+      renderList(tracksCache);
+    }
+
+    tabMine.addEventListener("click", async () => { view = "mine"; await refresh(); });
+    tabPublic.addEventListener("click", async () => { view = "public"; await refresh(); });
+
+    setNameBtn.addEventListener("click", async () => {
+      const v = prompt("pseudo (affichage) ?");
+      if(v === null) return;
+      try{
+        await apiPostJson("setName", {display_name: v});
+        await refresh();
+      }catch(e){
+        alert("err: " + e.message);
+      }
+    });
+
+    uploadBtn.addEventListener("click", async () => {
+      const audio = audioInput.files[0];
+      if(!audio) return alert("choisis un fichier audio");
+
+      const fd = new FormData();
+      fd.append("title", (titleInput.value || "").trim());
+      fd.append("type", typeInput.value || "beat");
+      fd.append("audio", audio);
+
+      const cover = coverInput.files[0];
+      if(cover) fd.append("cover", cover);
+
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = "upload...";
+      try{
+        await apiPostForm("upload", fd);
+        titleInput.value = "";
+        audioInput.value = "";
+        coverInput.value = "";
+        await refresh();
+      }catch(e){
+        alert("err: " + e.message);
+      }finally{
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = "upload";
+      }
+    });
+
+    pPlay.addEventListener("click", () => {
+      if(!currentId){
+        const first = tracksCache[0];
+        if(first) playTrackById(first.id);
+        return;
+      }
+      if(playerAudio.paused) playerAudio.play();
+      else playerAudio.pause();
+      setRowPlayingUI();
+    });
+
+    playerAudio.addEventListener("play", setRowPlayingUI);
+    playerAudio.addEventListener("pause", setRowPlayingUI);
+
+    playerAudio.addEventListener("loadedmetadata", () => {
+      pTimeDur.textContent = fmtTime(playerAudio.duration);
+    });
+
+    playerAudio.addEventListener("timeupdate", () => {
+      if(seeking) return;
+      const dur = playerAudio.duration || 0;
+      const cur = playerAudio.currentTime || 0;
+      pTimeCur.textContent = fmtTime(cur);
+      pTimeDur.textContent = fmtTime(dur);
+      if(dur > 0){
+        pRange.value = String(Math.floor((cur/dur) * 1000));
+      }else{
+        pRange.value = "0";
+      }
+    });
+
+    pRange.addEventListener("input", () => { seeking = true; });
+    pRange.addEventListener("change", () => {
+      const dur = playerAudio.duration || 0;
+      const v = Number(pRange.value || 0) / 1000;
+      if(dur > 0) playerAudio.currentTime = v * dur;
+      seeking = false;
+    });
+
+    refresh();
+  </script>
+</body>
+</html>
